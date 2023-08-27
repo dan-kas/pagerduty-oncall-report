@@ -123,20 +123,25 @@ async function handleInteractiveOptionsPrompts(options) {
   }
 }
 
+function saveTokenToEnv(token) {
+  process.env.PAGERDUTY_TOKEN = token;
+}
+
 async function prepareToken(storedTokenValue, { clearValue, isInteractive }) {
   if (ENV_PAGERDUTY_TOKEN) {
     return null;
   }
 
   if (storedTokenValue && clearValue !== "token") {
-    process.env.PAGERDUTY_TOKEN = storedTokenValue;
+    saveTokenToEnv(storedTokenValue);
 
     return storedTokenValue;
   }
 
   if (isInteractive) {
     const token = await promptForToken();
-
+    saveTokenToEnv(token);
+    
     return token;
   }
 
