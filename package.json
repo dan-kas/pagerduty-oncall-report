@@ -1,0 +1,29 @@
+{
+  "name": "pagerduty-oncall-report",
+  "version": "1.0.0",
+  "description": "PagerDuty report generator for on-call month",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "pd-oncall": "./index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@pagerduty/pdjs": "^2.2.4",
+    "commander": "^11.0.0",
+    "consola": "^3.2.3",
+    "date-fns": "^2.30.0"
+  },
+  "peerDependencies": {
+    "@clack/prompts": "^0.7.0"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./src/*": null
+  },
+  "imports": {
+    "#app/*": "./src/*.js"
+  }
+}
