@@ -7,15 +7,9 @@ export default {
     docs: { title: '📖 Documentation', semver: 'patch' },
     build: { title: '📦 Build', semver: 'patch' },
     types: { title: '🌊 Types', semver: 'patch' },
-    chore: { title: '🏡 Chore' },
     examples: { title: '🏀 Examples' },
     test: { title: '✅ Tests' },
-    style: { title: '🎨 Styles' },
+    style: { title: '🎨 Style' },
     ci: { title: '🤖 CI' },
-  },
-  templates: {
-    commitMessage: 'chore(release): v{{newVersion}}',
-    tagMessage: 'v{{newVersion}}',
-    tagBody: 'v{{newVersion}}',
   },
 }
