@@ -1,15 +1,11 @@
 import process from 'node:process'
 
 import {
-  differenceInCalendarDays,
-  differenceInHours,
   eachDayOfInterval,
   formatISO,
   isSameDay,
   isSameMonth,
   isWeekend,
-  max,
-  min,
   parseISO,
 } from 'date-fns'
 import { parsePayrollDetailDates } from '#app/date-utils'
@@ -78,71 +74,17 @@ export function getSimplePayroll(onCalls, { firstDayOfMonth, rate }) {
   }
 }
 
-export function getDetailedPayroll(
-  onCalls,
-  { firstDayOfMonth, lastDayOfMonth, rate },
-) {
-  const data = {
-    total: 0,
-    days: 0,
-    hours: 0,
-    detailRows: [],
-  }
-
-  onCalls
-    .filter(({ start, end }) => {
-      return (
-        isSameMonth(parseISO(start), firstDayOfMonth)
-        || isSameMonth(parseISO(end), firstDayOfMonth)
-      )
-    })
-    .forEach(({ start, end }, index, arr) => {
-      const isLastIteration = index === arr.length - 1
-
-      const startDate = max([parseISO(start), firstDayOfMonth])
-      const endDate = min([parseISO(end), lastDayOfMonth])
-
-      const hours = differenceInHours(endDate, startDate)
-      const days
-        = differenceInCalendarDays(endDate, startDate)
-        || (isLastIteration ? 1 : 0)
-
-      data.total += hours * rate
-      data.days += days
-      data.hours += hours
-
-      data.detailRows.push({
-        start: formatISO(startDate),
-        end: formatISO(endDate),
-        hours,
-        days,
-      })
-    })
-
-  return data
-}
-
 export function generatePayroll(onCalls, options) {
   const {
     firstDayOfMonth,
-    lastDayOfMonth,
     rate,
-    detailed: isDetailed,
   } = options
-
-  if (isDetailed) {
-    return getDetailedPayroll(onCalls, {
-      firstDayOfMonth,
-      lastDayOfMonth,
-      rate,
-    })
-  }
 
   return getSimplePayroll(onCalls, { firstDayOfMonth, rate })
 }
 
 export function printOncallReport({ meta, payroll, options }) {
-  const { json: isJSONOutput, detailed: isDetailedReport } = options
+  const { json: isJSONOutput } = options
 
   if (isJSONOutput) {
     process.stdout.write(
@@ -178,5 +120,5 @@ export function printOncallReport({ meta, payroll, options }) {
     console.table(detail)
 
   if (detailRows)
-    console.table(parsePayrollDetailDates(detailRows, isDetailedReport))
+    console.table(parsePayrollDetailDates(detailRows))
 }

@@ -24,20 +24,20 @@ export function getUntilDate(year, month) {
   return addDays(getLastDayOfMonth(year, month), 1)
 }
 
-export function getHumanReadableDateTime(date, withTime = true) {
+export function getHumanReadableDateTime(date, withTime = false) {
   const datePattern = 'dd/MM/yyyy'
   const timePattern = 'HH:mm'
 
   return format(date, `${datePattern}${withTime ? ` ${timePattern}` : ''}`)
 }
 
-export function parsePayrollDetailDates(rows, withTime) {
+export function parsePayrollDetailDates(rows) {
   return rows.map((row) => {
     for (const field in row) {
       const parsedField = parseISO(row[field])
 
       if (isValid(parsedField))
-        row[field] = getHumanReadableDateTime(parsedField, withTime)
+        row[field] = getHumanReadableDateTime(parsedField)
     }
 
     return row

@@ -1,11 +1,16 @@
 {
-  "name": "pagerduty-oncall-report",
+  "name": "@dan-kas/pagerduty-oncall-report",
   "type": "module",
-  "version": "1.0.0",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@8.7.0",
   "description": "PagerDuty report generator for on-call month",
-  "author": "",
-  "license": "ISC",
+  "author": "Daniel Kasprzyk <dankas12@gmail.com>",
+  "license": "MIT",
   "keywords": [],
+  "publishConfig": {
+    "@dan-kas:registry": "https://npm.pkg.github.com"
+  },
   "exports": {
     "*": null
   },
@@ -16,6 +21,10 @@
   "bin": {
     "pd-oncall": "./index.js"
   },
+  "files": [
+    "index.js",
+    "./src/*.js"
+  ],
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"

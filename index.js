@@ -67,11 +67,6 @@ program
     ).conflicts('schedule'),
   )
   .option('-r, --rate <rate>', 'Flat rate [1]', Number.parseFloat)
-  .option(
-    '--detailed',
-    'Hourly payroll that counts every hour of being on-call in a schedule [unofficial]',
-    false,
-  )
   .option('--json', 'Raw JSON output', false)
   .addOption(
     new Option('--json', 'Raw JSON output', false).implies({
