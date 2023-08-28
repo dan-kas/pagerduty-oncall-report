@@ -13,7 +13,7 @@ export const pkgObj = JSON.parse(
 )
 
 export const packageBin = Object.entries(pkgObj.bin)[0][0]
-export const packageName = pkgObj.name
+export const packageName = pkgObj.name.split('/')[1]
 
 export const configDir = path.join(os.homedir(), '.config', packageName)
 export const configFilePath = path.join(configDir, 'config.json')
