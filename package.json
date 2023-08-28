@@ -45,6 +45,14 @@
   "devDependencies": {
     "@antfu/eslint-config": "^0.41.0",
     "bumpp": "^9.2.0",
-    "eslint": "^8.48.0"
+    "eslint": "^8.48.0",
+    "lint-staged": "^14.0.1",
+    "simple-git-hooks": "^2.9.0"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged"
+  },
+  "lint-staged": {
+    "*.js": "eslint --fix"
   }
 }
