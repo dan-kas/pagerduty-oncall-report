@@ -76,14 +76,6 @@ export async function updateConfigField(field, value) {
   }
 }
 
-const getOptionName = (option) => {
-  const optionName = Object.keys(optionsMap).find(
-    (key) => optionsMap[key] === option
-  );
-
-  return optionName;
-};
-
 async function handleInteractiveOptionsPrompts(options) {
   if (!options.interactive) {
     return;
