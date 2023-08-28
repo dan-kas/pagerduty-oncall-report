@@ -1,5 +1,5 @@
 {
-  "name": "@dan-kas/pagerduty-oncall-report",
+  "name": "pagerduty-oncall-report",
   "type": "module",
   "version": "0.1.5",
   "packageManager": "pnpm@8.7.0",
@@ -7,9 +7,6 @@
   "author": "Daniel Kasprzyk <dankas12@gmail.com>",
   "license": "MIT",
   "keywords": [],
-  "publishConfig": {
-    "@dan-kas:registry": "https://npm.pkg.github.com"
-  },
   "exports": {
     "*": null
   },
@@ -27,7 +24,7 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "release": "bumpp && pnpm publish"
+    "bump": "bumpp"
   },
   "peerDependencies": {
     "@clack/prompts": "^0.7.0"
