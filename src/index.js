@@ -67,7 +67,6 @@ program
     ).conflicts('schedule'),
   )
   .option('-r, --rate <rate>', 'Flat rate [1]', Number.parseFloat)
-  .option('--json', 'Raw JSON output', false)
   .addOption(
     new Option('--json', 'Raw JSON output', false).implies({
       interactive: false,
@@ -217,7 +216,7 @@ program.configureOutput({
       return
     }
 
-    logger.info(str)
+    logger.log(str)
   },
   writeErr: (str) => {
     const options = program.opts()

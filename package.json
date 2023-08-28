@@ -15,7 +15,7 @@
   },
   "main": "index.js",
   "bin": {
-    "pd-oncall": "./index.js"
+    "pd-oncall": "./cli.mjs"
   },
   "files": [
     "index.js",
