@@ -9,6 +9,9 @@
   "exports": {
     "*": null
   },
+  "imports": {
+    "#app/*": "./src/*.js"
+  },
   "main": "index.js",
   "bin": {
     "pd-oncall": "./index.js"
@@ -26,8 +29,8 @@
     "consola": "^3.2.3",
     "date-fns": "^2.30.0"
   },
-  "imports": {
-    "#app/*": "./src/*.js"
+  "optionalDependencies": {
+    "typescript": "~5.1"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.41.0",
