@@ -3,41 +3,43 @@ import {
   endOfDay,
   endOfMonth,
   format,
-  isDate,
   isValid,
   parseISO,
   startOfDay,
   startOfMonth,
   subDays,
-} from "date-fns";
+} from 'date-fns'
 
-export const getFirstDayOfMonth = (year, month) =>
-  startOfDay(startOfMonth(new Date(year, month - 1)));
-export const getLastDayOfMonth = (year, month) =>
-  endOfDay(endOfMonth(new Date(year, month - 1)));
+export function getFirstDayOfMonth(year, month) {
+  return startOfDay(startOfMonth(new Date(year, month - 1)))
+}
+export function getLastDayOfMonth(year, month) {
+  return endOfDay(endOfMonth(new Date(year, month - 1)))
+}
 
-export const getSinceDate = (year, month) =>
-  subDays(getFirstDayOfMonth(year, month), 1);
-export const getUntilDate = (year, month) =>
-  addDays(getLastDayOfMonth(year, month), 1);
+export function getSinceDate(year, month) {
+  return subDays(getFirstDayOfMonth(year, month), 1)
+}
+export function getUntilDate(year, month) {
+  return addDays(getLastDayOfMonth(year, month), 1)
+}
 
-export const getHumanReadableDateTime = (date, withTime = true) => {
+export function getHumanReadableDateTime(date, withTime = true) {
   const datePattern = 'dd/MM/yyyy'
   const timePattern = 'HH:mm'
 
-  return format(date, `${datePattern}${withTime ? ` ${timePattern}` : ''}`);
+  return format(date, `${datePattern}${withTime ? ` ${timePattern}` : ''}`)
 }
 
-export const parsePayrollDetailDates = (rows, withTime) => {
+export function parsePayrollDetailDates(rows, withTime) {
   return rows.map((row) => {
     for (const field in row) {
-      const parsedField = parseISO(row[field]);
+      const parsedField = parseISO(row[field])
 
-      if (isValid(parsedField)) {
-        row[field] = getHumanReadableDateTime(parsedField, withTime);
-      }
+      if (isValid(parsedField))
+        row[field] = getHumanReadableDateTime(parsedField, withTime)
     }
 
-    return row;
-  });
-};
+    return row
+  })
+}

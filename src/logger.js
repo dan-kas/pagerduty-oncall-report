@@ -1,4 +1,4 @@
-import { createConsola } from "consola";
+import { createConsola } from 'consola'
 
 const logger = createConsola({
   fancy: true,
@@ -7,7 +7,6 @@ const logger = createConsola({
     compact: false,
     colors: true,
   },
-});
+})
 
-export default logger;
-
+export default logger

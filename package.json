@@ -1,29 +1,36 @@
 {
   "name": "pagerduty-oncall-report",
+  "type": "module",
   "version": "1.0.0",
   "description": "PagerDuty report generator for on-call month",
+  "author": "",
+  "license": "ISC",
+  "keywords": [],
+  "exports": {
+    "*": null
+  },
   "main": "index.js",
-  "type": "module",
   "bin": {
     "pd-oncall": "./index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "peerDependencies": {
+    "@clack/prompts": "^0.7.0"
+  },
   "dependencies": {
     "@pagerduty/pdjs": "^2.2.4",
     "commander": "^11.0.0",
     "consola": "^3.2.3",
     "date-fns": "^2.30.0"
   },
-  "peerDependencies": {
-    "@clack/prompts": "^0.7.0"
-  },
-  "exports": {
-    ".": "./index.js",
-    "./src/*": null
-  },
   "imports": {
     "#app/*": "./src/*.js"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^0.41.0",
+    "eslint": "^8.48.0"
   }
 }

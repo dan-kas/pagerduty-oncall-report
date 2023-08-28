@@ -1,49 +1,47 @@
-import { text, password, isCancel, cancel } from "@clack/prompts";
+import process from 'node:process'
+
+import { cancel, isCancel, password, text } from '@clack/prompts'
 
 export async function promptForToken() {
   const token = await promptForSimpleValue(
-    "Please enter your PagerDuty token",
+    'Please enter your PagerDuty token',
     {
       isSecret: true,
-    }
-  );
+    },
+  )
 
-  return token;
+  return token
 }
 
 export async function promptForSimpleValue(
   message,
-  { placeholder, isSecret = false, valueType = "string", required = true } = {}
+  { placeholder, isSecret = false, valueType = 'string', required = true } = {},
 ) {
-  const prompt = isSecret ? password : text;
+  const prompt = isSecret ? password : text
 
   const value = await prompt({
     message,
     placeholder,
     validate: (value) => {
-      if (valueType === "number" && isNaN(value)) {
-        return "Please enter a number";
-      }
+      if (valueType === 'number' && Number.isNaN(value))
+        return 'Please enter a number'
 
-      if (required && !value) {
-        return "Value is required";
-      }
+      if (required && !value)
+        return 'Value is required'
     },
-  });
+  })
 
   if (isCancel(value)) {
-    cancel();
+    cancel()
 
-    if (required) {
-      process.exit(1);
-    }
+    if (required)
+      process.exit(1)
 
-    return null;
+    return null
   }
 
-  if (valueType === "number") {
-    return parseFloat(value);
-  }
+  if (valueType === 'number')
+    return Number.parseFloat(value)
 
-  return value;
+  return value
 }
