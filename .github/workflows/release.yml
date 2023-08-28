@@ -19,6 +19,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.x
+          fetch-depth: 0
 
       - run: npx changelogithub@0.12
         env:
