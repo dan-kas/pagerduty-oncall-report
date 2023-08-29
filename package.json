@@ -20,7 +20,7 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "build": "tsc && resolve-tspaths",
+    "build": "rimraf dist && tsc && resolve-tspaths",
     "bump": "bumpp"
   },
   "peerDependencies": {
@@ -40,6 +40,7 @@
     "eslint": "^8.48.0",
     "lint-staged": "^14.0.1",
     "resolve-tspaths": "^0.8.15",
+    "rimraf": "^5.0.1",
     "simple-git-hooks": "^2.9.0",
     "typescript": "~5.1.6"
   },
