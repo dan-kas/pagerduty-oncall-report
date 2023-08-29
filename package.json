@@ -20,6 +20,7 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "build": "tsc",
     "bump": "bumpp"
   },
   "peerDependencies": {
