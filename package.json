@@ -1,7 +1,7 @@
 {
   "name": "@dan-kas/pd-oncall",
   "type": "module",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "packageManager": "pnpm@8.7.0",
   "description": "PagerDuty report generator for single month on-call",
   "author": "Daniel Kasprzyk <dankas12@gmail.com>",
