@@ -9,8 +9,11 @@ on:
       - 'v*'
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
     steps:
       - uses: actions/checkout@v3
         with:
@@ -18,7 +21,12 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
+          registry-url: https://registry.npmjs.org/
           node-version: 18.x
+
+      - run: npx changelogithub@0.12
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           
       - uses: pnpm/action-setup@v2
         name: Install pnpm
@@ -40,27 +48,6 @@ jobs:
               
       - run: pnpm install
       - run: pnpm build
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      packages: write
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-node@v3
-        with:
-          registry-url: https://registry.npmjs.org/
-          node-version: 18.x
-
-      - run: npx changelogithub@0.12
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
       - run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
