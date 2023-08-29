@@ -8,10 +8,18 @@ import {
   isWeekend,
   parseISO,
 } from 'date-fns'
+
+import type { ProgramOptions } from '#app/program'
 import { parsePayrollDetailDates } from '#app/date-utils'
 
-export function getDaysOfOnCall(onCalls, firstDayInMonth) {
-  const days = new Set()
+interface ActionOptions {
+  firstDayOfMonth?: Date
+  lastDayOfMonth?: Date
+  rate?: number
+}
+
+export function getDaysOfOnCall(onCalls: any[], firstDayInMonth?: Date) {
+  const days: { date: string; weekend: boolean }[] = []
 
   onCalls.forEach(({ start, end }) => {
     const startDate = parseISO(start)
@@ -27,23 +35,23 @@ export function getDaysOfOnCall(onCalls, firstDayInMonth) {
         if (daysInInterval.length > 1 && isSameDay(day, endDate))
           return false
 
-        return isSameMonth(day, firstDayInMonth)
+        return firstDayInMonth instanceof Date && isSameMonth(day, firstDayInMonth)
       })
       .forEach((day) => {
         const formattedDay = formatISO(day)
         const weekend = isWeekend(day)
 
-        days.add({
+        days.push({
           date: formattedDay,
           weekend,
         })
       })
   })
 
-  return Array.from(days)
+  return days
 }
 
-export function getSimplePayroll(onCalls, { firstDayOfMonth, rate }) {
+export function getSimplePayroll(onCalls: any[], { firstDayOfMonth, rate = 1 }: ActionOptions) {
   const daysOnCall = getDaysOfOnCall(onCalls, firstDayOfMonth)
 
   const weekDays = daysOnCall.filter(({ weekend }) => !weekend)
@@ -74,7 +82,7 @@ export function getSimplePayroll(onCalls, { firstDayOfMonth, rate }) {
   }
 }
 
-export function generatePayroll(onCalls, options) {
+export function generatePayroll(onCalls: any[], options: ActionOptions) {
   const {
     firstDayOfMonth,
     rate,
@@ -83,7 +91,7 @@ export function generatePayroll(onCalls, options) {
   return getSimplePayroll(onCalls, { firstDayOfMonth, rate })
 }
 
-export function printOncallReport({ meta, payroll, options }) {
+export function printOncallReport({ meta, payroll }: any, options: ProgramOptions) {
   const { json: isJSONOutput } = options
 
   if (isJSONOutput) {

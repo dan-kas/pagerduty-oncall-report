@@ -13,9 +13,9 @@ export async function promptForToken() {
   return token
 }
 
-export async function promptForSimpleValue(
-  message,
-  { placeholder, isSecret = false, valueType = 'string', required = true } = {},
+export async function promptForSimpleValue<T = string>(
+  message: string,
+  { placeholder = '', isSecret = false, valueType = 'string', required = true } = {},
 ) {
   const prompt = isSecret ? password : text
 
@@ -37,11 +37,11 @@ export async function promptForSimpleValue(
     if (required)
       process.exit(1)
 
-    return null
+    return
   }
 
   if (valueType === 'number')
-    return Number.parseFloat(value)
+    return Number.parseInt(value) as T
 
-  return value
+  return value as T
 }

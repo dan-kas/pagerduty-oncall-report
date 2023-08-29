@@ -4,12 +4,26 @@ import fs from 'node:fs/promises'
 import process from 'node:process'
 
 import { intro } from '@clack/prompts'
+
+import type { ProgramOptions } from '#app/program'
 import { promptForSimpleValue, promptForToken } from '#app/prompts'
 
 const ENV_PAGERDUTY_TOKEN = process.env.PAGERDUTY_TOKEN
 
+type ExtendableRecord<T, P = unknown> = {
+  [K in keyof T]: T[K]
+} & {
+  [K in string]: P
+}
+
+type Config = ExtendableRecord<{
+  token?: string | null
+  defaultRate?: number | null
+  defaultSchedule?: string | null
+}>
+
 export const pkgObj = JSON.parse(
-  await fs.readFile(new URL('../package.json', import.meta.url)),
+  await fs.readFile(new URL('../package.json', import.meta.url), 'utf-8'),
 )
 
 export const packageBin = Object.entries(pkgObj.bin)[0][0]
@@ -21,9 +35,13 @@ export const configFilePath = path.join(configDir, 'config.json')
 const optionsMap = {
   rate: 'defaultRate',
   schedule: 'defaultSchedule',
-}
+} satisfies Record<string, string>
 
-function isDefinedAndNotNull(value) {
+type ExtendableOptions = ExtendableRecord<{
+  [K in keyof typeof optionsMap]: typeof optionsMap[K]
+}, string>
+
+function isDefinedAndNotNull<T>(value: T): value is T {
   return typeof value !== 'undefined' && value !== null
 }
 
@@ -32,7 +50,7 @@ async function createEmptyConfigFile() {
   await fs.writeFile(configFilePath, JSON.stringify({}))
 }
 
-async function getConfigData() {
+async function getConfigData(): Promise<Config> {
   try {
     await fs.access(configFilePath)
   }
@@ -48,11 +66,11 @@ async function getConfigData() {
   return configJson
 }
 
-function mergeConfig(config, newConfig) {
-  for (const [key, value] of Object.entries(newConfig))
-    config[key] = value
-
-  return config
+function mergeConfig(config: Config, newConfig: Config) {
+  return {
+    ...config,
+    ...newConfig,
+  }
 }
 
 async function updateConfigFile(configValue = {}) {
@@ -62,7 +80,7 @@ async function updateConfigFile(configValue = {}) {
   await fs.writeFile(configFilePath, JSON.stringify(newConfig))
 }
 
-export async function updateConfigField(field, value) {
+export async function updateConfigField(field: keyof typeof optionsMap, value: unknown) {
   const fieldName = optionsMap[field]
 
   const validValueTypes = ['string', 'number', 'boolean']
@@ -75,12 +93,12 @@ export async function updateConfigField(field, value) {
   }
 }
 
-async function handleInteractiveOptionsPrompts(options) {
+async function handleInteractiveOptionsPrompts(options: ProgramOptions) {
   if (!options.interactive)
     return
 
   if (!options.rate) {
-    options.rate = await promptForSimpleValue('Provide your hourly flat rate', {
+    options.rate = await promptForSimpleValue<number>('Provide your hourly flat rate', {
       placeholder: '10',
       valueType: 'number',
     })
@@ -114,23 +132,23 @@ async function handleInteractiveOptionsPrompts(options) {
   }
 }
 
-function saveTokenToEnv(token) {
+function saveTokenToEnv(token: string) {
   process.env.PAGERDUTY_TOKEN = token
 }
 
-async function prepareToken(storedTokenValue, { clearValue, isInteractive }) {
+async function prepareToken(storedTokenValue: unknown, { clear, interactive }: Partial<ProgramOptions>) {
   if (ENV_PAGERDUTY_TOKEN)
     return null
 
-  if (storedTokenValue && clearValue !== 'token') {
+  if (storedTokenValue && typeof storedTokenValue === 'string' && clear !== 'token') {
     saveTokenToEnv(storedTokenValue)
 
     return storedTokenValue
   }
 
-  if (isInteractive) {
+  if (interactive) {
     const token = await promptForToken()
-    saveTokenToEnv(token)
+    saveTokenToEnv(token as string)
 
     return token
   }
@@ -138,7 +156,7 @@ async function prepareToken(storedTokenValue, { clearValue, isInteractive }) {
   throw new Error('PagerDuty access token is required')
 }
 
-export async function setup(options) {
+export async function setup(options: ExtendableRecord<ProgramOptions>) {
   const { clear: clearValue, interactive: isInteractive } = options
 
   if (isInteractive)
@@ -147,7 +165,7 @@ export async function setup(options) {
   if (clearValue === true)
     await fs.rm(configFilePath).catch(() => {})
 
-  const config = {
+  const config: Config = {
     token: null,
     defaultSchedule: null,
     defaultRate: null,
@@ -157,12 +175,12 @@ export async function setup(options) {
     const configStoredData = await getConfigData()
 
     config.token = await prepareToken(configStoredData.token, {
-      clearValue,
-      isInteractive,
+      clear: clearValue,
+      interactive: isInteractive,
     })
 
-    if (typeof clearValue === 'string' && optionsMap[clearValue])
-      configStoredData[optionsMap[clearValue]] = null
+    if (typeof clearValue === 'string' && (<ExtendableOptions>optionsMap)[clearValue])
+      configStoredData[(<ExtendableOptions>optionsMap)[clearValue]] = null
 
     for (const [option, configKey] of Object.entries(optionsMap)) {
       const configValue = configStoredData[configKey]
@@ -182,6 +200,9 @@ export async function setup(options) {
     await handleInteractiveOptionsPrompts(options)
   }
   catch (err) {
-    throw new Error(err?.message || 'Unknown error in setup', { cause: err })
+    if (err instanceof Error)
+      throw new Error(err.message, { cause: err })
+
+    throw err
   }
 }

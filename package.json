@@ -10,16 +10,12 @@
   "exports": {
     "*": null
   },
-  "imports": {
-    "#app/*": "./src/*.js"
-  },
-  "main": "index.js",
   "bin": {
     "pd-oncall": "./cli.mjs"
   },
   "files": [
-    "index.js",
-    "./src/*.js"
+    "./cli.mjs",
+    "./dist/*"
   ],
   "scripts": {
     "lint": "eslint .",
@@ -30,25 +26,25 @@
     "@clack/prompts": "^0.7.0"
   },
   "dependencies": {
+    "@commander-js/extra-typings": "^11.0.0",
     "@pagerduty/pdjs": "^2.2.4",
     "commander": "^11.0.0",
     "consola": "^3.2.3",
     "date-fns": "^2.30.0"
   },
-  "optionalDependencies": {
-    "typescript": "~5.1"
-  },
   "devDependencies": {
     "@antfu/eslint-config": "^0.41.0",
+    "@types/node": "^20.5.7",
     "bumpp": "^9.2.0",
     "eslint": "^8.48.0",
     "lint-staged": "^14.0.1",
-    "simple-git-hooks": "^2.9.0"
+    "simple-git-hooks": "^2.9.0",
+    "typescript": "~5.1.6"
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"
   },
   "lint-staged": {
-    "*.js": "eslint --fix"
+    "*.ts": "eslint --fix"
   }
 }

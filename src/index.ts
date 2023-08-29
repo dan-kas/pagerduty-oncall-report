@@ -1,11 +1,8 @@
 import process from 'node:process'
 
-import { Argument, InvalidArgumentError, Option, program } from 'commander'
 import { formatISO, getMonth, getYear } from 'date-fns'
 import { spinner } from '@clack/prompts'
-
-import logger from '#app/logger'
-import { packageBin, setup, updateConfigField } from '#app/setup'
+import { setup, updateConfigField } from '#app/setup'
 import { findSchedule, getOnCalls, getSchedule, getUser } from '#app/api'
 import {
   getFirstDayOfMonth,
@@ -15,64 +12,9 @@ import {
 } from '#app/date-utils'
 import { generatePayroll, printOncallReport } from '#app/payroll'
 
-function dateArgParser(value) {
-  const pattern = /(?<month>\d{1,2})(?:[-/](?<year>\d{4}))?/
-
-  const match = value.match(pattern)
-
-  if (!match) {
-    throw new InvalidArgumentError(
-      `\nInvalid date format.\nMust match pattern: ${pattern}`,
-    )
-  }
-
-  const { year, month } = match.groups
-
-  return {
-    year: year ? Number.parseInt(year, 10) : null,
-    month: month ? Number.parseInt(month, 10) || 1 : null,
-  }
-}
+import { program } from '#app/program'
 
 program
-  .name(packageBin)
-  .description('Generate PagerDuty payroll for current or chosen month')
-  .addHelpText('afterAll', '___')
-  .addHelpText(
-    'afterAll',
-    '[1] Provided value will be persisted as default for future usage.',
-  )
-  .addArgument(
-    new Argument(
-      '<customDate>',
-      'Custom date in YYYY-MM format. If not provided, current month is used.',
-    )
-      .argOptional()
-      .argParser(dateArgParser),
-  )
-  .addOption(
-    new Option('-c, --clear [field]', 'Clear config field or entire file')
-      .default(false)
-      .preset(true),
-  )
-  .addOption(
-    new Option('-s, --schedule <schedule>', 'Schedule ID [1]').conflicts(
-      'schedule-query',
-    ),
-  )
-  .addOption(
-    new Option(
-      '--schedule-query <query>',
-      'Schedule query, e.g. "FE"',
-    ).conflicts('schedule'),
-  )
-  .option('-r, --rate <rate>', 'Flat rate [1]', Number.parseFloat)
-  .addOption(
-    new Option('--json', 'Raw JSON output', false).implies({
-      interactive: false,
-    }),
-  )
-  .option('-i, --interactive', 'Interactive mode', true)
   .action(async (customDate, options) => {
     await setup(options)
 
@@ -110,12 +52,16 @@ program
       user = await getUser()
     }
     catch (err) {
-      if (isInteractive) {
-        spinnerInstance?.stop(err.message, 2)
-        process.exit(1)
+      if (err instanceof Error) {
+        if (isInteractive) {
+          spinnerInstance!.stop(err.message, 2)
+          process.exit(1)
+        }
+
+        program.error(err.message)
       }
 
-      program.error(err.message)
+      throw err
     }
 
     spinnerInstance?.message('Fetching schedule')
@@ -124,9 +70,7 @@ program
 
     try {
       if (options.scheduleQuery) {
-        const schedules = await findSchedule({
-          query: options.scheduleQuery,
-        })
+        const schedules = await findSchedule(options.scheduleQuery)
 
         if (!schedules.length) {
           throw new Error(
@@ -139,18 +83,20 @@ program
         updateConfigField('schedule', schedule.id)
       }
       else if (options.schedule) {
-        schedule = await getSchedule({
-          scheduleId: options.schedule,
-        })
+        schedule = await getSchedule(options.schedule)
       }
     }
     catch (err) {
-      if (isInteractive) {
-        spinnerInstance?.stop(err.message, 2)
-        process.exit(1)
+      if (err instanceof Error) {
+        if (isInteractive) {
+          spinnerInstance!.stop(err.message, 2)
+          process.exit(1)
+        }
+
+        program.error(err.message)
       }
 
-      program.error(err.message)
+      throw err
     }
 
     spinnerInstance?.message('Fetching on-calls')
@@ -168,7 +114,7 @@ program
       } for date ${year}-${month.toString().padStart(2, '0')}`
 
       if (isInteractive) {
-        spinnerInstance.stop(failMessage, 2)
+        spinnerInstance!.stop(failMessage, 2)
         process.exit(1)
       }
 
@@ -200,35 +146,8 @@ program
 
     spinnerInstance?.stop('Report generated')
 
-    printOncallReport({
-      meta,
-      payroll,
-      options,
-    })
+    printOncallReport({ meta, payroll }, options)
   })
-
-program.configureOutput({
-  writeOut: (str) => {
-    const options = program.opts()
-
-    if (options.json) {
-      process.stdout.write(str)
-      return
-    }
-
-    logger.log(str)
-  },
-  writeErr: (str) => {
-    const options = program.opts()
-
-    if (options.json) {
-      process.stderr.write(JSON.stringify({ error: str }))
-      process.exit(1)
-    }
-
-    logger.error(str.replace(/^error: /i, ''))
-  },
-})
 
 try {
   await program.parseAsync(process.argv)
@@ -236,10 +155,15 @@ try {
 catch (err) {
   const opts = program.opts()
 
+  let message = err as string
+
+  if (err instanceof Error)
+    message = err.message
+
   if (opts.json) {
-    process.stderr.write(JSON.stringify({ error: err.message }))
+    process.stderr.write(JSON.stringify({ error: message }))
     process.exit(1)
   }
 
-  program.error(err.message)
+  program.error(message)
 }

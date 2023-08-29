@@ -2,7 +2,7 @@ import process from 'node:process'
 
 import { api } from '@pagerduty/pdjs'
 
-let pdInst = null
+let pdInst: ReturnType<typeof api> | null = null
 
 function pd() {
   if (pdInst === null) {
@@ -15,7 +15,7 @@ function pd() {
   return pdInst
 }
 
-function handleErrorInData(data, ...args) {
+function handleErrorInData(data: any, ...args: string[]) {
   const { error } = data
   if (error) {
     const reasons = error.errors?.join(', ')
@@ -29,11 +29,11 @@ function handleErrorInData(data, ...args) {
   }
 }
 
-function handlePagerDutyError(err, message) {
-  if (err.status && err.statusText)
+function handlePagerDutyError(err: unknown, message: string) {
+  if (err instanceof Response)
     throw new Error(`${message}: [${err.status}] ${err.statusText}`)
 
-  throw new Error(err)
+  throw err
 }
 
 export async function getUser() {
@@ -49,7 +49,7 @@ export async function getUser() {
   }
 }
 
-export async function getSchedule({ scheduleId }) {
+export async function getSchedule(scheduleId: string) {
   try {
     const { data } = await pd().get(`/schedules/${scheduleId}`)
 
@@ -62,7 +62,7 @@ export async function getSchedule({ scheduleId }) {
   }
 }
 
-export async function findSchedule({ query }) {
+export async function findSchedule(query: string) {
   try {
     const { data } = await pd().get('/schedules', {
       queryParameters: {
@@ -79,7 +79,12 @@ export async function findSchedule({ query }) {
   }
 }
 
-export async function getOnCalls({ user, since, until, scheduleId }) {
+export async function getOnCalls({ user, since, until, scheduleId }: {
+  user: Record<string, any>
+  since: string
+  until: string
+  scheduleId?: string
+}) {
   try {
     const { data } = await pd().get('/oncalls', {
       queryParameters: {
@@ -87,7 +92,7 @@ export async function getOnCalls({ user, since, until, scheduleId }) {
         since,
         until,
         ...(scheduleId ? { 'schedule_ids[]': [scheduleId] } : {}),
-        'limit': 50,
+        'limit': '50',
       },
     })
 
