@@ -5,6 +5,7 @@ import {
   format,
   isValid,
   parseISO,
+  set,
   startOfDay,
   startOfMonth,
   subDays,
@@ -24,7 +25,16 @@ export function getUntilDate(year: number, month: number) {
   return addDays(getLastDayOfMonth(year, month), 1)
 }
 
-export function getHumanReadableDateTime(date: Date, withTime = false) {
+export function copyTimeFromDate(date: Date, referenceDate: Date) {
+  return set(date, {
+    hours: referenceDate.getHours(),
+    minutes: referenceDate.getMinutes(),
+    seconds: referenceDate.getSeconds(),
+    milliseconds: referenceDate.getMilliseconds(),
+  })
+}
+
+export function getHumanReadableDateTime(date: Date, withTime = true) {
   const datePattern = 'dd/MM/yyyy'
   const timePattern = 'HH:mm'
 
