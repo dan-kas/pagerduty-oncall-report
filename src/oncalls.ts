@@ -7,6 +7,7 @@ import {
   isSameDay,
   parseISO,
 } from 'date-fns'
+import { bold, gray, green, inverse, yellow } from 'kolorist'
 
 import type { ProgramOptions } from '#app/program'
 import { copyTimeFromDate, getFirstDayOfMonth, getHumanReadableDateTime, getLastDayOfMonth } from '#app/date-utils'
@@ -122,28 +123,40 @@ export function prepareOnCallReport({ meta, onCallShifts }: OnCallShiftsOutput, 
 
   const reportDate = `${date.year}-${date.month.toString().padStart(2, '0')}`
 
-  return `
-Report for ${reportDate}
-      User: ${user.name} [id: ${user.id}]
-  Schedule: ${schedule.name} [id: ${schedule.id}]
+  return `\
+${inverse(bold(`Report for ${reportDate}`))}
+      User: ${bold(user.name)} [id: ${user.id}]
+  Schedule: ${bold(schedule.name)} [id: ${schedule.id}]
             ${schedule.html_url}
 ------- ------- -------
-     Shifts: ${shifts.length}
-       Days: ${totalDays}
-      Hours: ${totalHours}
+     Shifts: ${bold(shifts.length)}
+       Days: ${bold(totalDays)}
+      Hours: ${bold(totalHours)}
 ------- ------- -------
-       Rate: ${rate.toFixed(2)}
-  Total sum: ${bill.toFixed(2)}
+       Rate: ${bold(rate.toFixed(2))}
+  Total sum: ${green(bold(bill.toFixed(2)))}
 ------- ------- -------
-
+${inverse(bold('=== Shifts ==='))}
 ${shifts?.reduce((previousValue, shift) => {
   const shiftStart = getHumanReadableDateTime(shift.start)
   const shiftEnd = getHumanReadableDateTime(shift.end)
-  const shiftDateRange = `${shiftStart} - ${shiftEnd}`
+  const shiftDateRange = `${yellow(shiftStart)} - ${yellow(shiftEnd)}`
 
   const daysLabel = shift.daysInShift > 1 ? `${shift.daysInShift} days` : '1 day'
   const hoursLabel = shift.hoursInShift > 1 ? `${shift.hoursInShift} hours` : '1 hour'
 
-  return previousValue.concat(`${shiftDateRange} (${daysLabel}, ${hoursLabel}) - ${shift.shiftBill.toFixed(2)}${EOL}`)
-}, '') ?? ''}`.replace(/^\n/, '')
+  const fillGap = [
+    shift.daysInShift,
+    shift.hoursInShift,
+  ]
+    .map(value => value > 1 ? '' : ' ')
+    .join('')
+
+  return previousValue.concat(`\
+${shiftDateRange} \
+${fillGap}${gray(`(${daysLabel}, ${hoursLabel})`)} | \
+${bold(shift.shiftBill.toFixed(2))} \
+${EOL}\
+`)
+}, '') ?? ''}`
 }
