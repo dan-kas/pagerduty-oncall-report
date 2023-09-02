@@ -5,12 +5,10 @@ import { spinner } from '@clack/prompts'
 import { setup, updateConfigField } from '#app/setup'
 import { findSchedule, getOnCalls, getSchedule, getUser } from '#app/api'
 import {
-  getFirstDayOfMonth,
-  getLastDayOfMonth,
   getSinceDate,
   getUntilDate,
 } from '#app/date-utils'
-import { generatePayroll, printOncallReport } from '#app/payroll'
+import { getOnCallShifts, printOncallReport } from '#app/payroll'
 
 import { program } from '#app/program'
 
@@ -36,13 +34,10 @@ program
     const now = new Date()
 
     const year = customDate?.year ?? getYear(now)
-    const month = customDate?.month ?? getMonth(now)
+    const month = customDate?.month ?? getMonth(now) + 1
 
     const sinceDate = getSinceDate(year, month)
     const untilDate = getUntilDate(year, month)
-
-    const firstDayOfMonth = getFirstDayOfMonth(year, month)
-    const lastDayOfMonth = getLastDayOfMonth(year, month)
 
     spinnerInstance?.message('Fetching user')
 
@@ -138,15 +133,15 @@ program
       rate: options.rate,
     }
 
-    const payroll = generatePayroll(onCalls, {
-      firstDayOfMonth,
-      lastDayOfMonth,
+    const onCallShifts = getOnCallShifts(onCalls, {
+      year,
+      month,
       rate: options.rate,
     })
 
     spinnerInstance?.stop('Report generated')
 
-    printOncallReport({ meta, payroll }, options)
+    printOncallReport({ meta, onCallShifts }, options)
   })
 
 try {

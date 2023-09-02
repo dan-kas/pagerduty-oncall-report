@@ -1,112 +1,126 @@
 import process from 'node:process'
 
 import {
-  eachDayOfInterval,
-  formatISO,
+  addDays,
+  differenceInDays,
+  differenceInHours,
   isSameDay,
-  isSameMonth,
-  isWeekend,
   parseISO,
 } from 'date-fns'
 
 import type { ProgramOptions } from '#app/program'
-import { parsePayrollDetailDates } from '#app/date-utils'
+import { copyTimeFromDate, getFirstDayOfMonth, getLastDayOfMonth } from '#app/date-utils'
 
 interface ActionOptions {
-  firstDayOfMonth?: Date
-  lastDayOfMonth?: Date
+  year: number
+  month: number
   rate?: number
 }
 
-export function getDaysOfOnCall(onCalls: any[], firstDayInMonth?: Date) {
-  const days: { date: string; weekend: boolean }[] = []
+interface OnCallEntry {
+  [key: string]: unknown
+  start: string
+  end: string
+}
 
-  onCalls.forEach(({ start, end }) => {
-    const startDate = parseISO(start)
-    const endDate = parseISO(end)
+type OnCallCollection = OnCallEntry[]
 
-    const daysInInterval = eachDayOfInterval({
-      start: startDate,
-      end: endDate,
+type OnCallShifts = ReturnType<typeof getOnCallShifts>
+
+interface OnCallShiftsOutput {
+  onCallShifts: OnCallShifts
+  meta: Record<string, any>
+}
+
+export function isValidShift(
+  { start, end }: OnCallEntry,
+  { firstDayOfMonth, lastDayOfMonth }: {
+    firstDayOfMonth: Date
+    lastDayOfMonth: Date
+  },
+) {
+  const startDate = parseISO(start)
+  const endDate = parseISO(end)
+
+  if (
+    startDate > endDate
+      || isSameDay(endDate, firstDayOfMonth)
+      || (startDate < firstDayOfMonth && endDate < firstDayOfMonth)
+      || startDate > lastDayOfMonth
+  )
+    return false
+
+  return true
+}
+
+export function getOnCallShifts(onCalls: OnCallCollection, { year, month, rate = 1 }: ActionOptions) {
+  const firstDayOfMonth = getFirstDayOfMonth(year, month)
+  const lastDayOfMonth = getLastDayOfMonth(year, month)
+
+  const onCallShifts: {
+    start: Date
+    end: Date
+    hoursInShift: number
+    daysInShift: number
+    shiftBill: number
+  }[] = []
+
+  let totalDays = 0
+  let totalHours = 0
+  let bill = 0
+
+  onCalls
+    .filter(onCallEntry => isValidShift(onCallEntry, { firstDayOfMonth, lastDayOfMonth }))
+    .forEach(({ start, end }) => {
+      let startDate = parseISO(start)
+      let endDate = parseISO(end)
+
+      if (startDate < firstDayOfMonth)
+        startDate = copyTimeFromDate(firstDayOfMonth, endDate)
+
+      if (endDate > lastDayOfMonth)
+        endDate = addDays(copyTimeFromDate(lastDayOfMonth, endDate), 1)
+
+      const hoursInShift = differenceInHours(endDate, startDate)
+      const daysInShift = differenceInDays(endDate, startDate) || 1
+      const shiftBill = hoursInShift * rate
+
+      onCallShifts.push({
+        start: startDate,
+        end: endDate,
+        hoursInShift,
+        daysInShift,
+        shiftBill,
+      })
+
+      totalHours += hoursInShift
+      totalDays += daysInShift
+      bill += shiftBill
     })
 
-    daysInInterval
-      .filter((day) => {
-        if (daysInInterval.length > 1 && isSameDay(day, endDate))
-          return false
-
-        return firstDayInMonth instanceof Date && isSameMonth(day, firstDayInMonth)
-      })
-      .forEach((day) => {
-        const formattedDay = formatISO(day)
-        const weekend = isWeekend(day)
-
-        days.push({
-          date: formattedDay,
-          weekend,
-        })
-      })
-  })
-
-  return days
-}
-
-export function getSimplePayroll(onCalls: any[], { firstDayOfMonth, rate = 1 }: ActionOptions) {
-  const daysOnCall = getDaysOfOnCall(onCalls, firstDayOfMonth)
-
-  const weekDays = daysOnCall.filter(({ weekend }) => !weekend)
-  const weekEnds = daysOnCall.filter(({ weekend }) => weekend)
-
-  const weekDaysLength = weekDays.length
-  const weekEndsLength = weekEnds.length
-
-  const detail = {
-    weekDays: {
-      days: weekDaysLength,
-      hours: weekDaysLength * 16,
-      total: weekDaysLength * 16 * rate,
-    },
-    weekEnds: {
-      days: weekEndsLength,
-      hours: weekEndsLength * 24,
-      total: weekEndsLength * 24 * rate,
-    },
-  }
-
   return {
-    days: detail.weekDays.days + detail.weekEnds.days,
-    hours: detail.weekDays.hours + detail.weekEnds.hours,
-    total: detail.weekDays.total + detail.weekEnds.total,
-    detail,
-    detailRows: daysOnCall,
+    totalDays,
+    totalHours,
+    bill,
+    shifts: onCallShifts,
   }
 }
 
-export function generatePayroll(onCalls: any[], options: ActionOptions) {
-  const {
-    firstDayOfMonth,
-    rate,
-  } = options
-
-  return getSimplePayroll(onCalls, { firstDayOfMonth, rate })
-}
-
-export function printOncallReport({ meta, payroll }: any, options: ProgramOptions) {
+export function printOncallReport({ meta, onCallShifts }: OnCallShiftsOutput, options: ProgramOptions) {
   const { json: isJSONOutput } = options
 
   if (isJSONOutput) {
     process.stdout.write(
       JSON.stringify({
         meta,
-        payroll,
+        onCallShifts,
       }),
     )
     process.exit(0)
   }
 
   const { date, user, schedule, rate } = meta
-
-  const { detail, detailRows, ...restPayroll } = payroll
+  const { shifts, bill, totalDays, totalHours } = onCallShifts
 
   const SEPARATOR = '------- ------- -------'
 
@@ -118,15 +132,13 @@ export function printOncallReport({ meta, payroll }: any, options: ProgramOption
   console.log(`Schedule: ${schedule.name} [id: ${schedule.id}]`)
   console.log(`          ${schedule.html_url}`)
   console.log(SEPARATOR)
-  console.log(`     Rate: ${rate.toFixed(2)}`)
-  console.log(`Total sum: ${restPayroll.total.toFixed(2)}`)
+  console.log(`       Days: ${totalDays}`)
+  console.log(`      Hours: ${totalHours}`)
+  console.log(`Total hours: ${totalHours}`)
+  console.log(SEPARATOR)
+  console.log(`       Rate: ${rate.toFixed(2)}`)
+  console.log(`  Total sum: ${bill.toFixed(2)}`)
   console.log(SEPARATOR)
 
-  console.table(restPayroll)
-
-  if (detail)
-    console.table(detail)
-
-  if (detailRows)
-    console.table(parsePayrollDetailDates(detailRows))
+  console.table(shifts)
 }
