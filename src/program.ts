@@ -3,7 +3,7 @@ import process from 'node:process'
 import { Argument, Command, InvalidArgumentError, Option } from '@commander-js/extra-typings'
 
 import logger from '#app/logger'
-import { packageBin } from '#app/setup'
+import { appVersion, packageBin } from '#app/setup'
 
 function dateArgParser(value: string) {
   const pattern = /(?<month>\d{1,2})(?:[-/](?<year>\d{4}))?/
@@ -26,6 +26,7 @@ function dateArgParser(value: string) {
 
 export const program = new Command()
   .name(packageBin)
+  .version(appVersion)
   .description('Generate PagerDuty payroll for current or chosen month')
   .addHelpText('afterAll', '___')
   .addHelpText(

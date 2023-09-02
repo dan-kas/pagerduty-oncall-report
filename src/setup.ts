@@ -28,6 +28,7 @@ export const pkgObj = JSON.parse(
 
 export const packageBin = Object.entries(pkgObj.bin)[0][0]
 export const packageName = pkgObj.name.split('/')[1]
+export const appVersion = pkgObj.version
 
 export const configDir = path.join(os.homedir(), '.config', packageName)
 export const configFilePath = path.join(configDir, 'config.json')
@@ -160,7 +161,7 @@ export async function setup(options: ExtendableRecord<ProgramOptions>) {
   const { clear: clearValue, interactive: isInteractive } = options
 
   if (isInteractive)
-    intro(packageName)
+    intro(`${packageName}@${appVersion}`)
 
   if (clearValue === true)
     await fs.rm(configFilePath).catch(() => {})
