@@ -4,6 +4,7 @@ import fs from 'node:fs/promises'
 import process from 'node:process'
 
 import { intro } from '@clack/prompts'
+import { options as koloristOptions } from 'kolorist'
 
 import type { ProgramOptions } from '#app/program'
 import { promptForSimpleValue, promptForToken } from '#app/prompts'
@@ -159,6 +160,9 @@ async function prepareToken(storedTokenValue: unknown, { clear, interactive }: P
 
 export async function setup(options: ExtendableRecord<ProgramOptions>) {
   const { clear: clearValue, interactive: isInteractive } = options
+
+  if (options.cleanReport)
+    koloristOptions.enabled = false
 
   if (isInteractive)
     intro(`${packageName}@${appVersion}`)

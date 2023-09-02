@@ -64,6 +64,7 @@ export const program = new Command()
     }),
   )
   .addOption(new Option('-i, --interactive', 'Interactive mode').default(true))
+  .addOption(new Option('--clean-report', 'Print report without colors'))
 
 program.configureOutput({
   writeOut: (str) => {
