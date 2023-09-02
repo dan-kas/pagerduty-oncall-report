@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 import { parseISO } from 'date-fns'
 
-import { getOnCallShifts, isValidShift } from '#app/payroll'
+import { getOnCallShifts, isValidShift } from '#app/oncalls'
 
 const factoryDate = (date: string) => parseISO(date)
 
