@@ -107,15 +107,18 @@ export function getOnCallShifts(onCalls: OnCallCollection, { year, month, rate =
 }
 
 export function prepareOnCallReport({ meta, onCallShifts }: OnCallShiftsOutput, options: ProgramOptions) {
-  if (options.json) {
-    return JSON.stringify({
-      meta,
-      onCallShifts,
-    })
-  }
-
   const { date, user, schedule, rate } = meta
   const { shifts, bill, totalDays, totalHours } = onCallShifts
+
+  if (options.json) {
+    return JSON.stringify({
+      ...meta,
+      shifts,
+      bill,
+      totalDays,
+      totalHours,
+    })
+  }
 
   const reportDate = `${date.year}-${date.month.toString().padStart(2, '0')}`
 
@@ -138,6 +141,9 @@ ${shifts?.reduce((previousValue, shift) => {
   const shiftEnd = getHumanReadableDateTime(shift.end)
   const shiftDateRange = `${shiftStart} - ${shiftEnd}`
 
-  return previousValue.concat(`${shiftDateRange} (${shift.daysInShift} days, ${shift.hoursInShift} hours) - ${shift.shiftBill.toFixed(2)}${EOL}`)
+  const daysLabel = shift.daysInShift > 1 ? `${shift.daysInShift} days` : '1 day'
+  const hoursLabel = shift.hoursInShift > 1 ? `${shift.hoursInShift} hours` : '1 hour'
+
+  return previousValue.concat(`${shiftDateRange} (${daysLabel}, ${hoursLabel}) - ${shift.shiftBill.toFixed(2)}${EOL}`)
 }, '') ?? ''}`.replace(/^\n/, '')
 }
