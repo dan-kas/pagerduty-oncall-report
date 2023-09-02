@@ -1,4 +1,4 @@
-import process from 'node:process'
+import { EOL } from 'node:os'
 
 import {
   addDays,
@@ -9,7 +9,7 @@ import {
 } from 'date-fns'
 
 import type { ProgramOptions } from '#app/program'
-import { copyTimeFromDate, getFirstDayOfMonth, getLastDayOfMonth } from '#app/date-utils'
+import { copyTimeFromDate, getFirstDayOfMonth, getHumanReadableDateTime, getLastDayOfMonth } from '#app/date-utils'
 
 interface ActionOptions {
   year: number
@@ -106,39 +106,38 @@ export function getOnCallShifts(onCalls: OnCallCollection, { year, month, rate =
   }
 }
 
-export function printOncallReport({ meta, onCallShifts }: OnCallShiftsOutput, options: ProgramOptions) {
-  const { json: isJSONOutput } = options
-
-  if (isJSONOutput) {
-    process.stdout.write(
-      JSON.stringify({
-        meta,
-        onCallShifts,
-      }),
-    )
-    process.exit(0)
+export function prepareOnCallReport({ meta, onCallShifts }: OnCallShiftsOutput, options: ProgramOptions) {
+  if (options.json) {
+    return JSON.stringify({
+      meta,
+      onCallShifts,
+    })
   }
 
   const { date, user, schedule, rate } = meta
   const { shifts, bill, totalDays, totalHours } = onCallShifts
 
-  const SEPARATOR = '------- ------- -------'
+  const reportDate = `${date.year}-${date.month.toString().padStart(2, '0')}`
 
-  /* eslint-disable no-console */
-  console.log(
-    `Report for ${date.year}-${date.month.toString().padStart(2, '0')}`,
-  )
-  console.log(`User: ${user.name} [id: ${user.id}]`)
-  console.log(`Schedule: ${schedule.name} [id: ${schedule.id}]`)
-  console.log(`          ${schedule.html_url}`)
-  console.log(SEPARATOR)
-  console.log(`       Days: ${totalDays}`)
-  console.log(`      Hours: ${totalHours}`)
-  console.log(`Total hours: ${totalHours}`)
-  console.log(SEPARATOR)
-  console.log(`       Rate: ${rate.toFixed(2)}`)
-  console.log(`  Total sum: ${bill.toFixed(2)}`)
-  console.log(SEPARATOR)
+  return `
+Report for ${reportDate}
+      User: ${user.name} [id: ${user.id}]
+  Schedule: ${schedule.name} [id: ${schedule.id}]
+            ${schedule.html_url}
+------- ------- -------
+     Shifts: ${shifts.length}
+       Days: ${totalDays}
+      Hours: ${totalHours}
+------- ------- -------
+       Rate: ${rate.toFixed(2)}
+  Total sum: ${bill.toFixed(2)}
+------- ------- -------
 
-  console.table(shifts)
+${shifts?.reduce((previousValue, shift) => {
+  const shiftStart = getHumanReadableDateTime(shift.start)
+  const shiftEnd = getHumanReadableDateTime(shift.end)
+  const shiftDateRange = `${shiftStart} - ${shiftEnd}`
+
+  return previousValue.concat(`${shiftDateRange} (${shift.daysInShift} days, ${shift.hoursInShift} hours) - ${shift.shiftBill.toFixed(2)}${EOL}`)
+}, '') ?? ''}`.replace(/^\n/, '')
 }

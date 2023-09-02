@@ -1,4 +1,5 @@
 import process from 'node:process'
+import { EOL } from 'node:os'
 
 import { formatISO, getMonth, getYear } from 'date-fns'
 import { spinner } from '@clack/prompts'
@@ -8,7 +9,7 @@ import {
   getSinceDate,
   getUntilDate,
 } from '#app/date-utils'
-import { getOnCallShifts, printOncallReport } from '#app/oncalls'
+import { getOnCallShifts, prepareOnCallReport } from '#app/oncalls'
 
 import { program } from '#app/program'
 
@@ -139,9 +140,12 @@ program
       rate: options.rate,
     })
 
+    const report = prepareOnCallReport({ meta, onCallShifts }, options)
+
     spinnerInstance?.stop('Report generated')
 
-    printOncallReport({ meta, onCallShifts }, options)
+    process.stdout.write(report + EOL)
+    process.exit(0)
   })
 
 try {

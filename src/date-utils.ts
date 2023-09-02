@@ -3,8 +3,6 @@ import {
   endOfDay,
   endOfMonth,
   format,
-  isValid,
-  parseISO,
   set,
   startOfDay,
   startOfMonth,
@@ -35,21 +33,9 @@ export function copyTimeFromDate(date: Date, referenceDate: Date) {
 }
 
 export function getHumanReadableDateTime(date: Date, withTime = true) {
-  const datePattern = 'dd/MM/yyyy'
-  const timePattern = 'HH:mm'
+  let formatPattern = 'dd/MM/yyyy'
+  if (withTime)
+    formatPattern = `${formatPattern} HH:mm`
 
-  return format(date, `${datePattern}${withTime ? ` ${timePattern}` : ''}`)
-}
-
-export function parsePayrollDetailDates(rows: any[]) {
-  return rows.map((row) => {
-    for (const field in row) {
-      const parsedField = parseISO(row[field])
-
-      if (isValid(parsedField))
-        row[field] = getHumanReadableDateTime(parsedField)
-    }
-
-    return row
-  })
+  return format(date, formatPattern)
 }
