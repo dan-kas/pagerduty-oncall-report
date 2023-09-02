@@ -43,6 +43,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
               
       - run: pnpm install
+      - run: pnpm test
       - run: pnpm build
 
       - run: npx changelogithub@0.12
