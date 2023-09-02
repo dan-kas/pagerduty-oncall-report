@@ -8,7 +8,7 @@ import {
   getSinceDate,
   getUntilDate,
 } from '#app/date-utils'
-import { getOnCallShifts, printOncallReport } from '#app/payroll'
+import { getOnCallShifts, printOncallReport } from '#app/oncalls'
 
 import { program } from '#app/program'
 
