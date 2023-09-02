@@ -22,7 +22,7 @@
     "lint:fix": "eslint . --fix",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
-    "build": "rimraf dist && tsc && resolve-tspaths",
+    "build": "rimraf dist && tsc -p tsconfig.build.json && resolve-tspaths",
     "bump": "bumpp"
   },
   "peerDependencies": {
