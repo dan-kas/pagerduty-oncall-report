@@ -26,6 +26,7 @@
     "lint:fix": "eslint . --fix",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
+    "type-check": "tsc -p tsconfig.build.json",
     "build": "rimraf dist && tsc -p tsconfig.build.json && resolve-tspaths",
     "bump": "bumpp"
   },
@@ -54,7 +55,8 @@
     "vitest": "^0.34.3"
   },
   "simple-git-hooks": {
-    "pre-commit": "npx lint-staged"
+    "pre-commit": "npx lint-staged",
+    "pre-push": "pnpm type-check && pnpm test"
   },
   "lint-staged": {
     "*.ts": "eslint --fix"
