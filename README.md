@@ -54,12 +54,14 @@ Arguments:
   customDate                 Custom date in YYYY-MM format. If not provided, current month is used.
 
 Options:
+  -V, --version              output the version number
   -c, --clear [field]        Clear config field or entire file (default: false, preset: true)
   -s, --schedule <schedule>  Schedule ID [1]
   --schedule-query <query>   Schedule query, e.g. "FE"
   -r, --rate <rate>          Flat rate [1]
-  --json                     Raw JSON output
+  --json                     Raw JSON output (default: false)
   -i, --interactive          Interactive mode (default: true)
+  --clean-report             Print report without colors
   -h, --help                 display help for command
 
 ___
