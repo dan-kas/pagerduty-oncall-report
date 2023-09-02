@@ -21,6 +21,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "vitest",
+    "test:coverage": "vitest run --coverage",
     "build": "rimraf dist && tsc && resolve-tspaths",
     "bump": "bumpp"
   },
@@ -37,6 +38,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "^0.41.0",
     "@types/node": "^20.5.7",
+    "@vitest/coverage-v8": "^0.34.3",
     "bumpp": "^9.2.0",
     "eslint": "^8.48.0",
     "lint-staged": "^14.0.1",
