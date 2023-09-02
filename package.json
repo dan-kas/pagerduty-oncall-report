@@ -6,6 +6,10 @@
   "description": "PagerDuty report generator for single month on-call",
   "author": "Daniel Kasprzyk <dankas12@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dan-kas/pagerduty-oncall-report"
+  },
   "keywords": [],
   "exports": {
     "*": null
