@@ -2,7 +2,6 @@ import { EOL } from 'node:os'
 
 import {
   addDays,
-  differenceInDays,
   differenceInHours,
   isSameDay,
   parseISO,
@@ -83,7 +82,7 @@ export function getOnCallShifts(onCalls: OnCallCollection, { year, month, rate =
         endDate = addDays(copyTimeFromDate(lastDayOfMonth, endDate), 1)
 
       const hoursInShift = differenceInHours(endDate, startDate)
-      const daysInShift = differenceInDays(endDate, startDate) || 1
+      const daysInShift = Math.ceil(hoursInShift / 24)
       const shiftBill = hoursInShift * rate
 
       onCallShifts.push({
