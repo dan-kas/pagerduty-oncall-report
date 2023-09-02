@@ -1,6 +1,6 @@
 # pagerduty-oncall-report
 
-[![NPM version](https://img.shields.io/npm/v/@dan-kas/pd-oncall?color=374151&label=@dan-kas/pd-oncall)](https://github.com/dan-kas/pagerduty-oncall-report) 
+[![NPM version](https://img.shields.io/npm/v/@dan-kas/pd-oncall?color=374151&label=@dan-kas/pd-oncall)](https://www.npmjs.com/package/@dan-kas/pd-oncall) 
 [![code style](https://antfu.me/badge-code-style.svg)](https://github.com/antfu/eslint-config)
 
 Generate PagerDuty payroll for current month or specified date.
