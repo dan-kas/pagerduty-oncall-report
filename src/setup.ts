@@ -3,6 +3,7 @@ import path from 'node:path'
 import fs from 'node:fs/promises'
 import process from 'node:process'
 
+import updateNotifier from 'update-notifier'
 import { intro } from '@clack/prompts'
 import { options as koloristOptions } from 'kolorist'
 
@@ -164,8 +165,11 @@ export async function setup(options: ExtendableRecord<ProgramOptions>) {
   if (options.cleanReport)
     koloristOptions.enabled = false
 
-  if (isInteractive)
+  if (isInteractive) {
+    updateNotifier({ pkg: pkgObj }).notify({ defer: false })
+
     intro(`${packageName}@${appVersion}`)
+  }
 
   if (clearValue === true)
     await fs.rm(configFilePath).catch(() => {})
