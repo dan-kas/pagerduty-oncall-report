@@ -5,6 +5,13 @@ import { Argument, Command, InvalidArgumentError, Option } from '@commander-js/e
 import logger from '#app/logger'
 import { appVersion, packageBin } from '#app/setup'
 
+function numberOrNull(value: string) {
+  if (!value)
+    return null
+
+  return Number.parseInt(value, 10)
+}
+
 function dateArgParser(value: string) {
   const pattern = /(?<month>\d{1,2})(?:[-/](?<year>\d{4}))?/
 
@@ -12,15 +19,21 @@ function dateArgParser(value: string) {
 
   if (!match) {
     throw new InvalidArgumentError(
-      `\nInvalid date format.\nMust match pattern: ${pattern}`,
+      `Invalid date format. Must match pattern: ${pattern}`,
     )
   }
 
-  const { year, month } = match.groups ?? {}
+  const matchGroups = match.groups || {}
+
+  const month = numberOrNull(matchGroups.month)
+  const year = numberOrNull(matchGroups.year)
+
+  if (typeof month === 'number' && (month < 1 || month > 12))
+    throw new InvalidArgumentError('Month must be between 1 and 12')
 
   return {
-    year: year ? Number.parseInt(year, 10) : null,
-    month: month ? Number.parseInt(month, 10) || 1 : null,
+    year,
+    month,
   }
 }
 
