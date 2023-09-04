@@ -136,7 +136,7 @@ ${inverse(bold(`Report for ${reportDate}`))}
   Total sum: ${green(bold(bill.toFixed(2)))}
 ------- ------- -------
 ${inverse(bold('=== Shifts ==='))}
-${shifts?.reduce((previousValue, shift) => {
+${shifts?.map((shift) => {
   const shiftStart = getHumanReadableDateTime(shift.start)
   const shiftEnd = getHumanReadableDateTime(shift.end)
   const shiftDateRange = `${yellow(shiftStart)} - ${yellow(shiftEnd)}`
@@ -151,11 +151,9 @@ ${shifts?.reduce((previousValue, shift) => {
     .map(value => value > 1 ? '' : ' ')
     .join('')
 
-  return previousValue.concat(`\
+  return `\
 ${shiftDateRange} \
 ${fillGap}${gray(`(${daysLabel}, ${hoursLabel})`)} | \
-${bold(shift.shiftBill.toFixed(2))} \
-${EOL}\
-`)
-}, '') ?? ''}`
+${bold(shift.shiftBill.toFixed(2))}`
+}).join(EOL) ?? ''}`
 }
