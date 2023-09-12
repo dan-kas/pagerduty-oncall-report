@@ -11,7 +11,6 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "outDir": "./dist",
     "rootDir": "./src",
     "paths": {
       "#app/*": ["./src/*"]
