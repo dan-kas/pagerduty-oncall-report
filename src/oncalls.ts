@@ -47,8 +47,9 @@ export function isValidShift(
       || isSameDay(endDate, firstDayOfMonth)
       || (startDate < firstDayOfMonth && endDate < firstDayOfMonth)
       || startDate > lastDayOfMonth
-  )
+  ) {
     return false
+  }
 
   return true
 }
@@ -75,11 +76,13 @@ export function getOnCallShifts(onCalls: OnCallCollection, { year, month, rate =
       let startDate = parseISO(start)
       let endDate = parseISO(end)
 
-      if (startDate < firstDayOfMonth)
+      if (startDate < firstDayOfMonth) {
         startDate = copyTimeFromDate(firstDayOfMonth, endDate)
+      }
 
-      if (endDate > lastDayOfMonth)
+      if (endDate > lastDayOfMonth) {
         endDate = addDays(copyTimeFromDate(lastDayOfMonth, endDate), 1)
+      }
 
       const hoursInShift = differenceInHours(endDate, startDate)
       const daysInShift = Math.ceil(hoursInShift / 24)

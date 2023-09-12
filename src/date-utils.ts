@@ -34,8 +34,9 @@ export function copyTimeFromDate(date: Date, referenceDate: Date) {
 
 export function getHumanReadableDateTime(date: Date, withTime = true) {
   let formatPattern = 'dd/MM/yyyy'
-  if (withTime)
+  if (withTime) {
     formatPattern = `${formatPattern} HH:mm`
+  }
 
   return format(date, formatPattern)
 }

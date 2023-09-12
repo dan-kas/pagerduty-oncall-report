@@ -97,8 +97,9 @@ export async function updateConfigField(field: keyof typeof optionsMap, value: u
 }
 
 async function handleInteractiveOptionsPrompts(options: ProgramOptions) {
-  if (!options.interactive)
+  if (!options.interactive) {
     return
+  }
 
   if (!options.rate) {
     options.rate = await promptForSimpleValue<number>('Provide your hourly flat rate', {
@@ -140,8 +141,9 @@ function saveTokenToEnv(token: string) {
 }
 
 async function prepareToken(storedTokenValue: unknown, { clear, interactive }: Partial<ProgramOptions>) {
-  if (ENV_PAGERDUTY_TOKEN)
+  if (ENV_PAGERDUTY_TOKEN) {
     return null
+  }
 
   if (storedTokenValue && typeof storedTokenValue === 'string' && clear !== 'token') {
     saveTokenToEnv(storedTokenValue)
@@ -162,8 +164,9 @@ async function prepareToken(storedTokenValue: unknown, { clear, interactive }: P
 export async function setup(options: ExtendableRecord<ProgramOptions>) {
   const { clear: clearValue, interactive: isInteractive } = options
 
-  if (options.cleanReport)
+  if (options.cleanReport) {
     koloristOptions.enabled = false
+  }
 
   if (isInteractive) {
     updateNotifier({ pkg: pkgObj }).notify({ defer: false })
@@ -171,8 +174,9 @@ export async function setup(options: ExtendableRecord<ProgramOptions>) {
     intro(`${packageName}@${appVersion}`)
   }
 
-  if (clearValue === true)
+  if (clearValue === true) {
     await fs.rm(configFilePath).catch(() => {})
+  }
 
   const config: Config = {
     token: null,
@@ -188,8 +192,9 @@ export async function setup(options: ExtendableRecord<ProgramOptions>) {
       interactive: isInteractive,
     })
 
-    if (typeof clearValue === 'string' && (<ExtendableOptions>optionsMap)[clearValue])
+    if (typeof clearValue === 'string' && (<ExtendableOptions>optionsMap)[clearValue]) {
       configStoredData[(<ExtendableOptions>optionsMap)[clearValue]] = null
+    }
 
     for (const [option, configKey] of Object.entries(optionsMap)) {
       const configValue = configStoredData[configKey]
@@ -209,8 +214,9 @@ export async function setup(options: ExtendableRecord<ProgramOptions>) {
     await handleInteractiveOptionsPrompts(options)
   }
   catch (err) {
-    if (err instanceof Error)
-      throw new Error(err.message, { cause: err })
+    if (err instanceof Error) {
+      throw new TypeError(err.message, { cause: err })
+    }
 
     throw err
   }

@@ -23,25 +23,29 @@ export async function promptForSimpleValue<T = string>(
     message,
     placeholder,
     validate: (value) => {
-      if (valueType === 'number' && Number.isNaN(value))
+      if (valueType === 'number' && Number.isNaN(value)) {
         return 'Please enter a number'
+      }
 
-      if (required && !value)
+      if (required && !value) {
         return 'Value is required'
+      }
     },
   })
 
   if (isCancel(value)) {
     cancel()
 
-    if (required)
+    if (required) {
       process.exit(1)
+    }
 
     return
   }
 
-  if (valueType === 'number')
+  if (valueType === 'number') {
     return Number.parseInt(value) as T
+  }
 
   return value as T
 }

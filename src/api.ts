@@ -30,8 +30,9 @@ function handleErrorInData(data: any, ...args: string[]) {
 }
 
 function handlePagerDutyError(err: unknown, message: string) {
-  if (err instanceof Response)
-    throw new Error(`${message}: [${err.status}] ${err.statusText}`)
+  if (err instanceof Response) {
+    throw new TypeError(`${message}: [${err.status}] ${err.statusText}`)
+  }
 
   throw err
 }

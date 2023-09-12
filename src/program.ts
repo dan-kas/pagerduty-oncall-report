@@ -6,8 +6,9 @@ import logger from '#app/logger'
 import { appVersion, packageBin } from '#app/setup'
 
 function numberOrNull(value: string) {
-  if (!value)
+  if (!value) {
     return null
+  }
 
   return Number.parseInt(value, 10)
 }
@@ -28,8 +29,9 @@ function dateArgParser(value: string) {
   const month = numberOrNull(matchGroups.month)
   const year = numberOrNull(matchGroups.year)
 
-  if (typeof month === 'number' && (month < 1 || month > 12))
+  if (typeof month === 'number' && (month < 1 || month > 12)) {
     throw new InvalidArgumentError('Month must be between 1 and 12')
+  }
 
   return {
     year,

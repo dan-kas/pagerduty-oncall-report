@@ -19,11 +19,13 @@ program
 
     const { interactive: isInteractive } = options
 
-    if (!options.rate)
+    if (!options.rate) {
       program.error('Provide your hourly flat rate')
+    }
 
-    if (!options.schedule && !options.scheduleQuery)
+    if (!options.schedule && !options.scheduleQuery) {
       program.error('Provide either schedule ID or schedule query')
+    }
 
     let spinnerInstance = null
 
@@ -156,8 +158,9 @@ catch (err) {
 
   let message = err as string
 
-  if (err instanceof Error)
+  if (err instanceof Error) {
     message = err.message
+  }
 
   if (opts.json) {
     process.stderr.write(JSON.stringify({ error: message }))
