@@ -1,8 +1,9 @@
 import process from 'node:process'
+import { EOL } from 'node:os'
 
 import { Argument, Command, InvalidArgumentError, Option } from '@commander-js/extra-typings'
 
-import logger from '#app/logger'
+import { bgRed, bold, red, stripColors, white } from 'kolorist'
 import { appVersion, packageBin } from '#app/setup'
 
 function numberOrNull(value: string) {
@@ -20,7 +21,7 @@ function dateArgParser(value: string) {
 
   if (!match) {
     throw new InvalidArgumentError(
-      `Invalid date format. Must match pattern: ${pattern}`,
+      red(`Invalid date format. Must match pattern: ${pattern}`),
     )
   }
 
@@ -30,7 +31,7 @@ function dateArgParser(value: string) {
   const year = numberOrNull(matchGroups.year)
 
   if (typeof month === 'number' && (month < 1 || month > 12)) {
-    throw new InvalidArgumentError('Month must be between 1 and 12')
+    throw new InvalidArgumentError(red('Month must be between 1 and 12'))
   }
 
   return {
@@ -82,25 +83,23 @@ export const program = new Command()
   .addOption(new Option('--clean-report', 'Print report without colors'))
 
 program.configureOutput({
-  writeOut: (str) => {
-    const options = program.opts()
-
-    if (options.json) {
-      process.stdout.write(str)
-      return
-    }
-
-    logger.log(str)
-  },
   writeErr: (str) => {
     const options = program.opts()
+    const pattern = new RegExp(`(^error: |${EOL}$)`, 'ig')
+    const normalizedStr = str.replace(pattern, '')
 
     if (options.json) {
-      process.stderr.write(JSON.stringify({ error: str }))
+      process.stderr.write(JSON.stringify({ error: stripColors(normalizedStr) }))
       process.exit(1)
     }
 
-    logger.error(str.replace(/^error: /i, ''))
+    if (options.interactive) {
+      const errorLabel = bgRed(white(bold(' >> Error << ')))
+      process.stderr.write(`${errorLabel}${EOL.repeat(2)}`)
+    }
+
+    process.stderr.write(`${normalizedStr}${EOL}`)
+    process.exit(1)
   },
 })
 
