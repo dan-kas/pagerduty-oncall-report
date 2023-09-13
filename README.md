@@ -18,6 +18,11 @@ Generate PagerDuty payroll for current month or specified date.
 npm install -g @dan-kas/pd-oncall
 ```
 
+## Requirements
+
+- User Access Token
+  - You can generate it in your profile on PagerDuty. See [docs](https://support.pagerduty.com/docs/api-access-keys#generate-a-user-token-rest-api-key) for reference on how to do that
+
 ## Usage: 
 
 By default you will be prompted for PagerDuty token, which is required for API calls. Provided token is then stored in config file in your homedir. If you prefer not to store this token in homedir, you can pass token each time like this: `PAGERDUTY_TOKEN=<token> pd-oncall` or set env `PAGERDUTY_TOKEN` globally
