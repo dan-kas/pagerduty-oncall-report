@@ -1,14 +1,16 @@
 import os from 'node:os'
 import path from 'node:path'
-import fs from 'node:fs/promises'
+import fs from 'node:fs'
+import fsPromises from 'node:fs/promises'
 import process from 'node:process'
 
-import updateNotifier from 'update-notifier'
+// @ts-expect-error moduleResolution:nodenext issue 54523
 import { intro } from '@clack/prompts'
 import { options as koloristOptions } from 'kolorist'
 
 import type { ProgramOptions } from '#app/program'
 import { promptForSimpleValue, promptForToken } from '#app/prompts'
+import checkVersion from '#app/check-version'
 
 const ENV_PAGERDUTY_TOKEN = process.env.PAGERDUTY_TOKEN
 
@@ -24,9 +26,7 @@ type Config = ExtendableRecord<{
   defaultSchedule?: string | null
 }>
 
-export const pkgObj = JSON.parse(
-  await fs.readFile(new URL('../package.json', import.meta.url), 'utf-8'),
-)
+export const pkgObj = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf-8'))
 
 export const packageBin = Object.entries(pkgObj.bin)[0][0]
 export const packageName = pkgObj.name.split('/')[1]
@@ -49,13 +49,13 @@ function isDefinedAndNotNull<T>(value: T): value is T {
 }
 
 async function createEmptyConfigFile() {
-  await fs.mkdir(configDir, { recursive: true })
-  await fs.writeFile(configFilePath, JSON.stringify({}))
+  await fsPromises.mkdir(configDir, { recursive: true })
+  await fsPromises.writeFile(configFilePath, JSON.stringify({}))
 }
 
 async function getConfigData(): Promise<Config> {
   try {
-    await fs.access(configFilePath)
+    await fsPromises.access(configFilePath)
   }
   catch {
     await createEmptyConfigFile()
@@ -63,7 +63,7 @@ async function getConfigData(): Promise<Config> {
     return {}
   }
 
-  const configData = await fs.readFile(configFilePath, 'utf-8')
+  const configData = await fsPromises.readFile(configFilePath, 'utf-8')
   const configJson = JSON.parse(configData)
 
   return configJson
@@ -80,7 +80,7 @@ async function updateConfigFile(configValue = {}) {
   const config = await getConfigData()
   const newConfig = mergeConfig(config, configValue)
 
-  await fs.writeFile(configFilePath, JSON.stringify(newConfig))
+  await fsPromises.writeFile(configFilePath, JSON.stringify(newConfig))
 }
 
 export async function updateConfigField(field: keyof typeof optionsMap, value: unknown) {
@@ -169,13 +169,13 @@ export async function setup(options: ExtendableRecord<ProgramOptions>) {
   }
 
   if (isInteractive) {
-    updateNotifier({ pkg: pkgObj }).notify({ defer: false })
+    await checkVersion(pkgObj)
 
     intro(`${packageName}@${appVersion}`)
   }
 
   if (clearValue === true) {
-    await fs.rm(configFilePath).catch(() => {})
+    await fsPromises.rm(configFilePath).catch(() => {})
   }
 
   const config: Config = {

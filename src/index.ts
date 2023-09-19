@@ -1,8 +1,9 @@
 import process from 'node:process'
 import { EOL } from 'node:os'
 
-import { formatISO, getMonth, getYear } from 'date-fns'
+// @ts-expect-error moduleResolution:nodenext issue 54523
 import { spinner } from '@clack/prompts'
+import { formatISO, getMonth, getYear } from 'date-fns'
 import { setup, updateConfigField } from '#app/setup'
 import { findSchedule, getOnCalls, getSchedule, getUser } from '#app/api'
 import {
@@ -150,10 +151,7 @@ program
     process.exit(0)
   })
 
-try {
-  await program.parseAsync(process.argv)
-}
-catch (err) {
+program.parseAsync(process.argv).catch((err) => {
   const opts = program.opts()
 
   let message = err as string
@@ -168,4 +166,4 @@ catch (err) {
   }
 
   program.error(message)
-}
+})

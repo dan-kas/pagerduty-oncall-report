@@ -1,5 +1,6 @@
 import process from 'node:process'
 
+// @ts-expect-error moduleResolution:nodenext issue 54523
 import { cancel, isCancel, password, text } from '@clack/prompts'
 
 export async function promptForToken() {

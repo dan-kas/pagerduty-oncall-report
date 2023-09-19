@@ -1,6 +1,5 @@
 {
   "name": "@dan-kas/pd-oncall",
-  "type": "module",
   "version": "0.7.0",
   "packageManager": "pnpm@8.7.0",
   "description": "PagerDuty report generator for single month on-call",
@@ -11,15 +10,12 @@
     "url": "git+https://github.com/dan-kas/pagerduty-oncall-report.git"
   },
   "keywords": [],
-  "exports": {
-    "*": null
-  },
   "bin": {
-    "pd-oncall": "cli.mjs"
+    "pd-oncall": "./dist/bin/cli.js"
   },
   "files": [
-    "./cli.mjs",
-    "./dist/*"
+    "./dist/**/*.js",
+    "./dist/**/*.js.map"
   ],
   "scripts": {
     "lint": "eslint .",
@@ -27,7 +23,8 @@
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "type-check": "tsc -p tsconfig.build.json --noEmit",
-    "build": "unbuild",
+    "build": "rimraf dist && tsc -p tsconfig.build.json && resolve-tspaths -p tsconfig.build.json",
+    "build:bin": "npx pkg . --out-path build --no-bytecode --public-packages \"*\" --public",
     "bump": "bumpp"
   },
   "peerDependencies": {
@@ -37,6 +34,7 @@
     "@commander-js/extra-typings": "^11.0.0",
     "@pagerduty/pdjs": "^2.2.4",
     "commander": "^11.0.0",
+    "cross-fetch": "^4.0.0",
     "date-fns": "^2.30.0",
     "kolorist": "^1.8.0",
     "update-notifier": "^6.0.2"
@@ -49,9 +47,10 @@
     "bumpp": "^9.2.0",
     "eslint": "^8.48.0",
     "lint-staged": "^14.0.1",
+    "resolve-tspaths": "^0.8.15",
+    "rimraf": "^5.0.1",
     "simple-git-hooks": "^2.9.0",
     "typescript": "~5.1.6",
-    "unbuild": "^2.0.0",
     "vite-tsconfig-paths": "^4.2.0",
     "vitest": "^0.34.3"
   },
@@ -61,5 +60,15 @@
   },
   "lint-staged": {
     "*.ts": "eslint --fix"
+  },
+  "pkg": {
+    "scripts": [
+      "./dist/**/*.js"
+    ],
+    "targets": [
+      "node18-linux-x64",
+      "node18-macos-x64",
+      "node18-win-x64"
+    ]
   }
 }
