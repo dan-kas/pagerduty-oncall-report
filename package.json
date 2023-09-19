@@ -23,8 +23,9 @@
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "type-check": "tsc -p tsconfig.build.json --noEmit",
-    "build": "rimraf dist && tsc -p tsconfig.build.json && resolve-tspaths -p tsconfig.build.json",
-    "build:bin": "npx pkg . --out-path build --no-bytecode --public-packages \"*\" --public",
+    "build": "npm run build:app && npm run build:bin",
+    "build:app": "rimraf dist && tsc -p tsconfig.build.json && resolve-tspaths -p tsconfig.build.json",
+    "build:bin": "rimraf build && npx pkg . --no-bytecode --public-packages \"*\" --public -C GZip",
     "bump": "bumpp"
   },
   "peerDependencies": {
