@@ -102,7 +102,7 @@ async function handleInteractiveOptionsPrompts(options: ProgramOptions) {
   }
 
   if (!options.rate) {
-    options.rate = await promptForSimpleValue<number>('Provide your hourly flat rate', {
+    options.rate = await promptForSimpleValue<number>('How much do you make an hour for being on-call', {
       placeholder: '10',
       valueType: 'number',
     })
@@ -118,7 +118,7 @@ async function handleInteractiveOptionsPrompts(options: ProgramOptions) {
 
     if (fetchMethod === 'id') {
       const scheduleId = await promptForSimpleValue(
-        'Provide schedule ID',
+        'Enter schedule ID',
         {
           placeholder: 'P123456',
         },
@@ -131,9 +131,9 @@ async function handleInteractiveOptionsPrompts(options: ProgramOptions) {
     }
     else if (fetchMethod === 'query') {
       const scheduleQuery = await promptForSimpleValue(
-        'Provide schedule query',
+        'Enter query to search for schedule by name',
         {
-          placeholder: 'FE',
+          placeholder: 'My team\'s amazing schedule name',
         },
       )
 
