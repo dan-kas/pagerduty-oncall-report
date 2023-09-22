@@ -44,7 +44,7 @@ jobs:
 
       - run: pnpm install
       - run: pnpm test
-      - run: pnpm build
+      - run: pnpm build:app
 
       - run: npx changelogithub@0.12
         env:
