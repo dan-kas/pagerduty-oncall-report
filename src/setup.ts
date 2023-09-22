@@ -210,7 +210,6 @@ export async function setup(options: ExtendableRecord<ProgramOptions>) {
     }
 
     await updateConfigFile(config)
-
     await handleInteractiveOptionsPrompts(options)
   }
   catch (err) {

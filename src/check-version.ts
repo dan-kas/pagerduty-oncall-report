@@ -1,5 +1,6 @@
 import { EOL } from 'node:os'
 import process from 'node:process'
+
 import { green, red } from 'kolorist'
 import fetch from 'cross-fetch'
 
