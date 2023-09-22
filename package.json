@@ -11,9 +11,10 @@
   },
   "keywords": [],
   "bin": {
-    "pd-oncall": "dist/bin/cli.js"
+    "pd-oncall": "cli.js"
   },
   "files": [
+    "cli.js",
     "./dist/**/*.js",
     "./dist/**/*.js.map"
   ],

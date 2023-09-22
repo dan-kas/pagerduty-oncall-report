@@ -9,7 +9,7 @@ import { intro } from '@clack/prompts'
 import { options as koloristOptions } from 'kolorist'
 
 import type { ProgramOptions } from '#app/program'
-import { promptForSimpleValue, promptForToken } from '#app/prompts'
+import { promptChoice, promptForSimpleValue, promptForToken } from '#app/prompts'
 import checkVersion from '#app/check-version'
 
 const ENV_PAGERDUTY_TOKEN = process.env.PAGERDUTY_TOKEN
@@ -111,21 +111,27 @@ async function handleInteractiveOptionsPrompts(options: ProgramOptions) {
   }
 
   if (!options.schedule && !options.scheduleQuery) {
-    const scheduleId = await promptForSimpleValue(
-      'Provide schedule ID. If no value provided in next step you will be asked for query to search for schedule',
-      {
-        placeholder: 'P123456',
-        required: false,
-      },
-    )
+    const fetchMethod = await promptChoice('How would you like to fetch schedule?', [
+      ['id', 'I know schedule ID'],
+      ['query', 'I want to search by schedule name'],
+    ])
 
-    if (scheduleId) {
-      options.schedule = scheduleId
-      await updateConfigField('schedule', scheduleId)
+    if (fetchMethod === 'id') {
+      const scheduleId = await promptForSimpleValue(
+        'Provide schedule ID',
+        {
+          placeholder: 'P123456',
+        },
+      )
+
+      if (scheduleId) {
+        options.schedule = scheduleId
+        await updateConfigField('schedule', scheduleId)
+      }
     }
-    else {
+    else if (fetchMethod === 'query') {
       const scheduleQuery = await promptForSimpleValue(
-        'Provide schedule query, e.g. "FE"',
+        'Provide schedule query',
         {
           placeholder: 'FE',
         },

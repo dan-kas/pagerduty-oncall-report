@@ -1,7 +1,7 @@
 import process from 'node:process'
 
 // @ts-expect-error moduleResolution:nodenext issue 54523
-import { cancel, isCancel, password, text } from '@clack/prompts'
+import { cancel, isCancel, password, select, text } from '@clack/prompts'
 
 export async function promptForToken() {
   const token = await promptForSimpleValue(
@@ -12,6 +12,24 @@ export async function promptForToken() {
   )
 
   return token
+}
+
+export async function promptChoice(message: string, choices: [value: string, label: string][]) {
+  const value = await select({
+    message,
+    options: choices.map(([value, label]) => ({
+      value,
+      label,
+    })),
+  })
+
+  if (isCancel(value)) {
+    cancel()
+
+    return null
+  }
+
+  return value
 }
 
 export async function promptForSimpleValue<T = string>(
