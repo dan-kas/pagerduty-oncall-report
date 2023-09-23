@@ -73,7 +73,7 @@ export async function findSchedule(query: string) {
 
     handleErrorInData(data, `query: ${query}`)
 
-    return data.schedules
+    return data.schedules as Record<string, any>[]
   }
   catch (err) {
     handlePagerDutyError(err, 'Error fetching schedules')

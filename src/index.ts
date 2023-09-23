@@ -4,6 +4,7 @@ import { EOL } from 'node:os'
 // @ts-expect-error moduleResolution:nodenext issue 54523
 import { spinner } from '@clack/prompts'
 import { formatISO, getMonth, getYear } from 'date-fns'
+import { promptChoice } from './prompts'
 import { setup, updateConfigField } from '#app/setup'
 import { findSchedule, getOnCalls, getSchedule, getUser } from '#app/api'
 import {
@@ -71,13 +72,24 @@ program
       if (options.scheduleQuery) {
         const schedules = await findSchedule(options.scheduleQuery)
 
-        if (!schedules.length) {
+        let scheduleIndex = 0
+
+        if (!schedules?.length) {
           throw new Error(
             `No schedules found for query "${options.scheduleQuery}"`,
           )
         }
+        else if (schedules.length > 1) {
+          scheduleIndex = await promptChoice(
+            `Found ${schedules.length} schedules matching query "${options.scheduleQuery}", choose one of them`,
+            schedules.map(({ summary, id }, index) => [index, `${summary} [${id}]`]),
+            {
+              required: true,
+            },
+          )
+        }
 
-        schedule = schedules[0]
+        const schedule = schedules[scheduleIndex]
 
         updateConfigField('schedule', schedule.id)
       }
