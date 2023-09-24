@@ -4,9 +4,10 @@ import { EOL } from 'node:os'
 // @ts-expect-error moduleResolution:nodenext issue 54523
 import { spinner } from '@clack/prompts'
 import { formatISO, getMonth, getYear } from 'date-fns'
-import { promptChoice } from './prompts'
+
+import { promptChoice } from '#app/prompts'
 import { setup, updateConfigField } from '#app/setup'
-import { findSchedule, getOnCalls, getSchedule, getUser } from '#app/api'
+import { findSchedule, getOnCalls, getSchedule, getUser } from '#app/api/pager-duty'
 import {
   getSinceDate,
   getUntilDate,

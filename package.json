@@ -10,6 +10,7 @@
     "url": "git+https://github.com/dan-kas/pagerduty-oncall-report.git"
   },
   "keywords": [],
+  "configName": "pd-oncall",
   "bin": {
     "pd-oncall": "cli.js"
   },
@@ -36,10 +37,8 @@
     "@commander-js/extra-typings": "^11.0.0",
     "@pagerduty/pdjs": "^2.2.4",
     "commander": "^11.0.0",
-    "cross-fetch": "^4.0.0",
     "date-fns": "^2.30.0",
-    "kolorist": "^1.8.0",
-    "update-notifier": "^6.0.2"
+    "kolorist": "^1.8.0"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.41.0",

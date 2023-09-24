@@ -1,6 +1,5 @@
 import os from 'node:os'
 import path from 'node:path'
-import fs from 'node:fs'
 import fsPromises from 'node:fs/promises'
 import process from 'node:process'
 
@@ -10,7 +9,9 @@ import { options as koloristOptions } from 'kolorist'
 
 import type { ProgramOptions } from '#app/program'
 import { promptChoice, promptForSimpleValue, promptForToken } from '#app/prompts'
-import checkVersion from '#app/check-version'
+
+import { checkVersion } from '#app/check-version'
+import { appVersion, configName, packageBinName } from '#app/package'
 
 const ENV_PAGERDUTY_TOKEN = process.env.PAGERDUTY_TOKEN
 
@@ -26,13 +27,7 @@ type Config = ExtendableRecord<{
   defaultSchedule?: string | null
 }>
 
-export const pkgObj = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf-8'))
-
-export const packageBin = Object.entries(pkgObj.bin)[0][0]
-export const packageName = pkgObj.name.split('/')[1]
-export const appVersion = pkgObj.version
-
-export const configDir = path.join(os.homedir(), '.config', packageName)
+export const configDir = path.join(os.homedir(), '.config', configName)
 export const configFilePath = path.join(configDir, 'config.json')
 
 const optionsMap = {
@@ -175,9 +170,9 @@ export async function setup(options: ExtendableRecord<ProgramOptions>) {
   }
 
   if (isInteractive) {
-    await checkVersion(pkgObj)
+    await checkVersion()
 
-    intro(`${packageName}@${appVersion}`)
+    intro(`${packageBinName}@${appVersion}`)
   }
 
   if (clearValue === true) {

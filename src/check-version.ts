@@ -1,71 +1,50 @@
 import { EOL } from 'node:os'
 import process from 'node:process'
 
-import { green, red } from 'kolorist'
-import fetch from 'cross-fetch'
+import { green } from 'kolorist'
 
-async function tryUpdateNotifier(pkgObj: any) {
-  try {
-    const { default: updateNotifier } = await import('update-notifier')
+import pkgObj, { appVersion } from '#app/package'
+import { getLatestPackageVersion } from '#app/api/npm-registry'
 
-    updateNotifier({ pkg: pkgObj }).notify({ defer: false })
+function semVersionCompare(a: string, b: string): string | null {
+  const [aMajor, aMinor, aPatch] = a.split('.')
+  const [bMajor, bMinor, bPatch] = b.split('.')
 
-    return true
+  if (aMajor !== bMajor) {
+    return 'major'
   }
-  catch {}
 
-  return false
+  if (aMinor !== bMinor) {
+    return 'minor'
+  }
+
+  if (aPatch !== bPatch) {
+    return 'patch'
+  }
+
+  return null
 }
 
-async function tryGitHubReleaseApi(pkgObj: any) {
-  try {
-    const repositoryUrlMatch = (<string>pkgObj.repository.url).match(/(?<protocol>https:\/\/)(?<domain>github\.com)\/(?<repository>[^\/]+\/[^\.\/]+)/)
+export async function checkVersion() {
+  const latestVersion = await getLatestPackageVersion()
 
-    if (!repositoryUrlMatch) {
-      return
-    }
-
-    const { protocol, domain, repository } = repositoryUrlMatch.groups ?? {}
-
-    const apiUrl = `${protocol}api.${domain}/repos/${repository}/releases/latest`
-
-    const response = await fetch(apiUrl, {
-      headers: {
-        Accept: 'application/vnd.github+json',
-      },
-    })
-    const release = await response.json()
-
-    if (!release) {
-      return
-    }
-
-    const versionMatch = (<string>release.name).match(/^v(\d+\.\d+\.\d+)$/)
-
-    if (!versionMatch) {
-      return
-    }
-
-    const packageVersion = pkgObj.version
-    const releaseVersion = versionMatch[1]
-    const isLatest = releaseVersion === packageVersion
-
-    if (!isLatest) {
-      process.stdout.write(`| 🆕 New version available${EOL}`)
-      process.stdout.write(`| ${red(packageVersion)} ==> ${green(releaseVersion)}${EOL}`)
-      process.stdout.write(`| @see ${release.html_url}${EOL}`)
-      process.stdout.write(EOL)
-    }
-  }
-  catch {}
-}
-
-export default async function checkVersion(pkgObj: any) {
-  const isUpdateNotifierAvailable = await tryUpdateNotifier(pkgObj)
-
-  if (isUpdateNotifierAvailable) {
+  if (!latestVersion) {
     return
   }
 
-  await tryGitHubReleaseApi(pkgObj)
+  const isLatest = semVersionCompare(latestVersion, appVersion) === null
+
+  if (isLatest) {
+    return
+  }
+
+  const packageUrl = `https://www.npmjs.com/package/${pkgObj.name}`
+  const githubRepositoryUrl = pkgObj.repository.url.replace(/^git\+|\.git$/g, '')
+  const githubRepositoryReleasesUrl = `${githubRepositoryUrl}/releases`
+
+  process.stdout.write(`| 🆕 New version available${EOL}`)
+  process.stdout.write(`| ${appVersion} ==> ${green(latestVersion)}${EOL}`)
+  process.stdout.write(`| @see ${packageUrl}${EOL}`)
+  process.stdout.write(`| @see ${githubRepositoryReleasesUrl}${EOL}`)
+  process.stdout.write(EOL)
 }

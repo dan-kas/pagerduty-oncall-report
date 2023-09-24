@@ -4,7 +4,7 @@ import { EOL } from 'node:os'
 import { Argument, Command, InvalidArgumentError, Option } from '@commander-js/extra-typings'
 
 import { bgRed, bold, red, stripColors, white } from 'kolorist'
-import { appVersion, packageBin } from '#app/setup'
+import { appVersion, packageBinName } from '#app/package'
 
 function numberOrNull(value: string) {
   if (!value) {
@@ -41,7 +41,7 @@ function dateArgParser(value: string) {
 }
 
 export const program = new Command()
-  .name(packageBin)
+  .name(packageBinName)
   .version(appVersion)
   .description('Generate PagerDuty payroll for current or chosen month')
   .addHelpText('afterAll', '___')
