@@ -1,18 +1,35 @@
 import process from 'node:process'
 
-import { api } from '@pagerduty/pdjs'
+import { simpleFetch } from '#app/api/fetch'
 
-let pdInst: ReturnType<typeof api> | null = null
+type QueryParameterValue = string | number
 
-function pd() {
-  if (pdInst === null) {
-    pdInst = api({
-      token: process.env.PAGERDUTY_TOKEN,
-      tokenType: 'token',
-    })
+interface RequestOptions {
+  queryParameters?: Record<string, QueryParameterValue | QueryParameterValue[]>
+}
+
+async function getData(endpoint: string, options?: RequestOptions) {
+  const apiUrl = new URL('https://api.pagerduty.com')
+
+  if (options?.queryParameters) {
+    apiUrl.search = Object.entries(options.queryParameters)
+      .map(([key, value]) => `${key}=${value}`)
+      .join('&')
   }
 
-  return pdInst
+  apiUrl.pathname = endpoint
+
+  const headers = {
+    'Accept': 'application/vnd.pagerduty+json;version=2',
+    'Content-Type': 'application/json',
+    'Authorization': `Token token=${process.env.PAGERDUTY_TOKEN}`,
+  }
+
+  const data = await simpleFetch<Record<string, unknown>>(apiUrl, {
+    headers,
+  })
+
+  return data
 }
 
 function handleErrorInData(data: any, ...args: string[]) {
@@ -29,7 +46,7 @@ function handleErrorInData(data: any, ...args: string[]) {
   }
 }
 
-function handlePagerDutyError(err: unknown, message: string) {
+function handlePagerDutyError(err: unknown, message: string): never {
   if (err instanceof Response) {
     throw new TypeError(`${message}: [${err.status}] ${err.statusText}`)
   }
@@ -39,11 +56,11 @@ function handlePagerDutyError(err: unknown, message: string) {
 
 export async function getUser() {
   try {
-    const { data } = await pd().get('/users/me')
+    const data = await getData('/users/me')
 
     handleErrorInData(data)
 
-    return data.user
+    return data.user as Record<string, any>
   }
   catch (err) {
     handlePagerDutyError(err, 'Error fetching user')
@@ -52,11 +69,11 @@ export async function getUser() {
 
 export async function getSchedule(scheduleId: string) {
   try {
-    const { data } = await pd().get(`/schedules/${scheduleId}`)
+    const data = await getData(`/schedules/${scheduleId}`)
 
     handleErrorInData(data, `scheduleId: ${scheduleId}`)
 
-    return data.schedule
+    return data.schedule as Record<string, any>
   }
   catch (err) {
     handlePagerDutyError(err, 'Error fetching schedule')
@@ -65,7 +82,7 @@ export async function getSchedule(scheduleId: string) {
 
 export async function findSchedule(query: string) {
   try {
-    const { data } = await pd().get('/schedules', {
+    const data = await getData('/schedules', {
       queryParameters: {
         query,
       },
@@ -87,7 +104,7 @@ export async function getOnCalls({ user, since, until, scheduleId }: {
   scheduleId?: string
 }) {
   try {
-    const { data } = await pd().get('/oncalls', {
+    const data = await getData('/oncalls', {
       queryParameters: {
         'user_ids[]': [user.id],
         since,
@@ -105,7 +122,7 @@ export async function getOnCalls({ user, since, until, scheduleId }: {
       `schedule: ${scheduleId}`,
     )
 
-    return data.oncalls
+    return data.oncalls as Record<string, any>[]
   }
   catch (err) {
     handlePagerDutyError(err, 'Error fetching on-calls')

@@ -67,7 +67,7 @@ program
 
     spinnerInstance?.message('Fetching schedule')
 
-    let schedule = null
+    let schedule
 
     try {
       if (options.scheduleQuery) {
@@ -109,6 +109,10 @@ program
       }
 
       throw err
+    }
+
+    if (!schedule) {
+      throw new Error('Schedule not found')
     }
 
     spinnerInstance?.message('Fetching on-calls')

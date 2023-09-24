@@ -19,8 +19,8 @@ interface ActionOptions {
 
 interface OnCallEntry {
   [key: string]: unknown
-  start: string
-  end: string
+  start?: string
+  end?: string
 }
 
 type OnCallCollection = OnCallEntry[]
@@ -39,8 +39,8 @@ export function isValidShift(
     lastDayOfMonth: Date
   },
 ) {
-  const startDate = parseISO(start)
-  const endDate = parseISO(end)
+  const startDate = parseISO(start ?? '')
+  const endDate = parseISO(end ?? '')
 
   if (
     startDate > endDate
@@ -73,8 +73,8 @@ export function getOnCallShifts(onCalls: OnCallCollection, { year, month, rate =
   onCalls
     .filter(onCallEntry => isValidShift(onCallEntry, { firstDayOfMonth, lastDayOfMonth }))
     .forEach(({ start, end }) => {
-      let startDate = parseISO(start)
-      let endDate = parseISO(end)
+      let startDate = parseISO(start ?? '')
+      let endDate = parseISO(end ?? '')
 
       if (startDate < firstDayOfMonth) {
         startDate = copyTimeFromDate(firstDayOfMonth, endDate)

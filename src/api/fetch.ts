@@ -5,7 +5,7 @@ interface RequestOptions {
   headers?: Record<string, string>
 }
 
-export function simpleFetch<T>(url: string, options: RequestOptions = {}): Promise<T> {
+export function simpleFetch<T>(url: string | URL, options: RequestOptions = {}): Promise<T> {
   const { headers, method } = options
 
   return new Promise((resolve, reject) => {
