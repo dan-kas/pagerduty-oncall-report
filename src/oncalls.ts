@@ -127,9 +127,9 @@ export function prepareOnCallReport({ meta, onCallShifts }: OnCallShiftsOutput, 
 
   return `\
 ${inverse(bold(`Report for ${reportDate}`))}
-      User: ${bold(user.name)} [id: ${user.id}]
-  Schedule: ${bold(schedule.name)} [id: ${schedule.id}]
-            ${schedule.html_url}
+       User: ${bold(user.name)} [id: ${user.id}]
+   Schedule: ${bold(schedule.name)} [id: ${schedule.id}]
+             ${schedule.html_url}
 ------- ------- -------
      Shifts: ${bold(shifts.length)}
        Days: ${bold(totalDays)}

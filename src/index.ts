@@ -81,12 +81,18 @@ program
           )
         }
         else if (schedules.length > 1) {
+          const foundSchedulesSummary = schedules.map(({ summary, id }) => `${summary} [${id}]`)
+
+          if (!isInteractive) {
+            throw new Error(`Multiple schedules found, narrow your query. Found schedules: ${foundSchedulesSummary.join(', ')}`)
+          }
+
           scheduleIndex = await promptChoice(
-            `Found ${schedules.length} schedules matching query "${options.scheduleQuery}", choose one of them`,
-            schedules.map(({ summary, id }, index) => [index, `${summary} [${id}]`]),
-            {
-              required: true,
-            },
+              `Found ${schedules.length} schedules matching query "${options.scheduleQuery}", choose one of them`,
+              foundSchedulesSummary.map((schedule, index) => [index, schedule]),
+              {
+                required: true,
+              },
           )
         }
 
