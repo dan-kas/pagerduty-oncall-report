@@ -43,18 +43,18 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.41.0",
-    "@types/node": "^20.5.7",
+    "@types/node": "^20.6.5",
     "@types/update-notifier": "^6.0.5",
-    "@vitest/coverage-v8": "^0.34.3",
+    "@vitest/coverage-v8": "^0.34.5",
     "bumpp": "^9.2.0",
-    "eslint": "^8.48.0",
+    "eslint": "^8.50.0",
     "lint-staged": "^14.0.1",
     "resolve-tspaths": "^0.8.15",
     "rimraf": "^5.0.1",
     "simple-git-hooks": "^2.9.0",
     "typescript": "~5.1.6",
-    "vite-tsconfig-paths": "^4.2.0",
-    "vitest": "^0.34.3"
+    "vite-tsconfig-paths": "^4.2.1",
+    "vitest": "^0.34.5"
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged",
