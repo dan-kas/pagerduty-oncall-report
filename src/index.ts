@@ -90,7 +90,7 @@ program
           )
         }
 
-        const schedule = schedules[scheduleIndex]
+        schedule = schedules[scheduleIndex]
 
         updateConfigField('schedule', schedule.id)
       }
