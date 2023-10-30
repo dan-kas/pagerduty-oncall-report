@@ -98,6 +98,48 @@ describe('getOnCallShifts', () => {
       },
     },
     {
+      descriptor: 'one shift [no DST]',
+      currentTime: new Date(2023, 9, 15, 0, 0, 0),
+      input: [
+        factoryShiftInput('2023-10-27 17:00', '2023-10-28 09:00'),
+      ],
+      output: {
+        days: 1,
+        hours: 16,
+        shifts: [
+          factoryShiftOutput('2023-10-27 17:00', '2023-10-28 09:00', 1, 16),
+        ],
+      },
+    },
+    {
+      descriptor: 'one shift [DST off]',
+      currentTime: new Date(2023, 9, 15, 0, 0, 0),
+      input: [
+        factoryShiftInput('2023-10-28 17:00', '2023-10-29 09:00'),
+      ],
+      output: {
+        days: 1,
+        hours: 17,
+        shifts: [
+          factoryShiftOutput('2023-10-28 17:00', '2023-10-29 09:00', 1, 17),
+        ],
+      },
+    },
+    {
+      descriptor: 'one shift [DST on]',
+      currentTime: new Date(2023, 2, 15, 0, 0, 0),
+      input: [
+        factoryShiftInput('2023-03-25 17:00', '2023-03-26 09:00'),
+      ],
+      output: {
+        days: 1,
+        hours: 15,
+        shifts: [
+          factoryShiftOutput('2023-03-25 17:00', '2023-03-26 09:00', 1, 15),
+        ],
+      },
+    },
+    {
       descriptor: 'one shift with overlap from previous month\'s shift',
       input: [
         factoryShiftInput('2021-12-30 17:00', '2022-01-02 09:00'),
@@ -147,8 +189,18 @@ describe('getOnCallShifts', () => {
         shifts: [],
       },
     },
-  ])('[case %#] should return $descriptor', ({ input, output }) => {
-    const shifts = getOnCallShifts(input, { month, year, rate })
+  ])('[case %#] should return $descriptor', ({ input, output, currentTime }) => {
+    let yearToSet = year
+    let monthToSet = month
+
+    if (currentTime) {
+      vi.setSystemTime(currentTime)
+
+      yearToSet = currentTime.getFullYear()
+      monthToSet = currentTime.getMonth() + 1
+    }
+
+    const shifts = getOnCallShifts(input, { month: monthToSet, year: yearToSet, rate })
 
     expect(shifts.totalDays).toEqual(output.days)
     expect(shifts.totalHours).toEqual(output.hours)
