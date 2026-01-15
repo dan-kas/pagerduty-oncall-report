@@ -8,7 +8,7 @@ interface RequestOptions {
   queryParameters?: Record<string, QueryParameterValue | QueryParameterValue[]>
 }
 
-async function getData(endpoint: string, options?: RequestOptions) {
+async function getData(endpoint: string, options?: RequestOptions): Promise<Record<string, unknown>> {
   const apiUrl = new URL('https://api.pagerduty.com')
 
   if (options?.queryParameters) {
@@ -32,7 +32,7 @@ async function getData(endpoint: string, options?: RequestOptions) {
   return data
 }
 
-function handleErrorInData(data: any, ...args: string[]) {
+function handleErrorInData(data: any, ...args: string[]): void {
   const { error } = data
   if (error) {
     const reasons = error.errors?.join(', ')
@@ -54,7 +54,10 @@ function handlePagerDutyError(err: unknown, message: string): never {
   throw err
 }
 
-export async function getUser() {
+/**
+ * @TODO improve type
+ */
+export async function getUser(): Promise<Record<string, any>> {
   try {
     const data = await getData('/users/me')
 
@@ -67,7 +70,10 @@ export async function getUser() {
   }
 }
 
-export async function getSchedule(scheduleId: string) {
+/**
+ * @TODO improve type
+ */
+export async function getSchedule(scheduleId: string): Promise<Record<string, any>> {
   try {
     const data = await getData(`/schedules/${scheduleId}`)
 
@@ -80,7 +86,10 @@ export async function getSchedule(scheduleId: string) {
   }
 }
 
-export async function findSchedule(query: string) {
+/**
+ * @TODO improve type
+ */
+export async function findSchedule(query: string): Promise<Record<string, any>[]> {
   try {
     const data = await getData('/schedules', {
       queryParameters: {
@@ -102,7 +111,7 @@ export async function getOnCalls({ user, since, until, scheduleId }: {
   since: string
   until: string
   scheduleId?: string
-}) {
+}): Promise<Record<string, any>[]> {
   try {
     const data = await getData('/oncalls', {
       queryParameters: {

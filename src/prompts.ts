@@ -1,17 +1,16 @@
 import process from 'node:process'
 
-// @ts-expect-error moduleResolution:nodenext issue 54523
 import { cancel, isCancel, password, select, text } from '@clack/prompts'
 
 interface PromptChoicesOptions {
   required?: boolean
 }
 
-type PromptChoiceReturnType<T, O> = O extends { required: true } ?
-  T :
-  T | null
+type PromptChoiceReturnType<T, O> = O extends { required: true }
+  ? T
+  : T | null
 
-export async function promptForToken() {
+export async function promptForToken(): Promise<string | undefined> {
   const token = await promptForSimpleValue(
     'Please enter your PagerDuty token',
     {
@@ -53,7 +52,7 @@ export async function promptChoice<T extends string | number, O extends PromptCh
 export async function promptForSimpleValue<T = string>(
   message: string,
   { placeholder = '', isSecret = false, valueType = 'string', required = true } = {},
-) {
+): Promise<T | undefined> {
   const prompt = isSecret ? password : text
 
   const value = await prompt({

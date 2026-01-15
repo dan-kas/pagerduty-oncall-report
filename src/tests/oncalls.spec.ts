@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { parseISO } from 'date-fns'
 
@@ -6,8 +6,7 @@ import { getOnCallShifts, isValidShift } from '#app/oncalls'
 
 const factoryDate = (date: string) => parseISO(date)
 
-function factoryShiftInput(startDate: string,
-  endDate: string) {
+function factoryShiftInput(startDate: string, endDate: string) {
   return {
     start: startDate,
     end: endDate,
@@ -21,7 +20,7 @@ describe('isValidShift', () => {
   const firstDayOfMonth = new Date(year, month, 1)
   const lastDayOfMonth = new Date(year, month, 31, 23, 59, 59)
 
-  test.each([
+  it.each([
     {
       input: factoryShiftInput('2022-01-01 09:00', '2022-01-02 17:00'),
       result: true,
@@ -82,7 +81,7 @@ describe('getOnCallShifts', () => {
     vi.useRealTimers()
   })
 
-  test.each([
+  it.each([
     {
       descriptor: 'one shift',
       input: [

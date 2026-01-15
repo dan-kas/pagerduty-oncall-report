@@ -1,7 +1,6 @@
 import process from 'node:process'
 import { EOL } from 'node:os'
 
-// @ts-expect-error moduleResolution:nodenext issue 54523
 import { spinner } from '@clack/prompts'
 import { formatISO, getMonth, getYear } from 'date-fns'
 
@@ -88,11 +87,11 @@ program
           }
 
           scheduleIndex = await promptChoice(
-              `Found ${schedules.length} schedules matching query "${options.scheduleQuery}", choose one of them`,
-              foundSchedulesSummary.map((schedule, index) => [index, schedule]),
-              {
-                required: true,
-              },
+            `Found ${schedules.length} schedules matching query "${options.scheduleQuery}", choose one of them`,
+            foundSchedulesSummary.map((schedule, index) => [index, schedule]),
+            {
+              required: true,
+            },
           )
         }
 

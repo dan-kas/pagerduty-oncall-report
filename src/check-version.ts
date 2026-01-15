@@ -25,7 +25,7 @@ function semVersionCompare(a: string, b: string): string | null {
   return null
 }
 
-export async function checkVersion() {
+export async function checkVersion(): Promise<void> {
   const latestVersion = await getLatestPackageVersion()
 
   if (!latestVersion) {

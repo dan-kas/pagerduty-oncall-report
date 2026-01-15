@@ -3,13 +3,11 @@ import path from 'node:path'
 import fsPromises from 'node:fs/promises'
 import process from 'node:process'
 
-// @ts-expect-error moduleResolution:nodenext issue 54523
 import { intro } from '@clack/prompts'
 import { options as koloristOptions } from 'kolorist'
 
 import type { ProgramOptions } from '#app/program'
 import { promptChoice, promptForSimpleValue, promptForToken } from '#app/prompts'
-
 import { checkVersion } from '#app/check-version'
 import { appVersion, configName, packageBinName } from '#app/package'
 
@@ -43,7 +41,7 @@ function isDefinedAndNotNull<T>(value: T): value is T {
   return typeof value !== 'undefined' && value !== null
 }
 
-async function createEmptyConfigFile() {
+async function createEmptyConfigFile(): Promise<void> {
   await fsPromises.mkdir(configDir, { recursive: true })
   await fsPromises.writeFile(configFilePath, JSON.stringify({}))
 }
@@ -64,21 +62,21 @@ async function getConfigData(): Promise<Config> {
   return configJson
 }
 
-function mergeConfig(config: Config, newConfig: Config) {
+function mergeConfig(config: Config, newConfig: Config): Config {
   return {
     ...config,
     ...newConfig,
   }
 }
 
-async function updateConfigFile(configValue = {}) {
+async function updateConfigFile(configValue: Config = {}): Promise<void> {
   const config = await getConfigData()
   const newConfig = mergeConfig(config, configValue)
 
   await fsPromises.writeFile(configFilePath, JSON.stringify(newConfig))
 }
 
-export async function updateConfigField(field: keyof typeof optionsMap, value: unknown) {
+export async function updateConfigField(field: keyof typeof optionsMap, value: unknown): Promise<void> {
   const fieldName = optionsMap[field]
 
   const validValueTypes = ['string', 'number', 'boolean']
@@ -91,7 +89,7 @@ export async function updateConfigField(field: keyof typeof optionsMap, value: u
   }
 }
 
-async function handleInteractiveOptionsPrompts(options: ProgramOptions) {
+async function handleInteractiveOptionsPrompts(options: ProgramOptions): Promise<void> {
   if (!options.interactive) {
     return
   }
@@ -137,11 +135,11 @@ async function handleInteractiveOptionsPrompts(options: ProgramOptions) {
   }
 }
 
-function saveTokenToEnv(token: string) {
+function saveTokenToEnv(token: string): void {
   process.env.PAGERDUTY_TOKEN = token
 }
 
-async function prepareToken(storedTokenValue: unknown, { clear, interactive }: Partial<ProgramOptions>) {
+async function prepareToken(storedTokenValue: unknown, { clear, interactive }: Partial<ProgramOptions>): Promise<string | null | undefined> {
   if (ENV_PAGERDUTY_TOKEN) {
     return null
   }
@@ -162,7 +160,7 @@ async function prepareToken(storedTokenValue: unknown, { clear, interactive }: P
   throw new Error('PagerDuty access token is required')
 }
 
-export async function setup(options: ExtendableRecord<ProgramOptions>) {
+export async function setup(options: ExtendableRecord<ProgramOptions>): Promise<void> {
   const { clear: clearValue, interactive: isInteractive } = options
 
   if (options.cleanReport) {

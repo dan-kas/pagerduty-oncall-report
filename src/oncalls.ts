@@ -25,7 +25,18 @@ interface OnCallEntry {
 
 type OnCallCollection = OnCallEntry[]
 
-type OnCallShifts = ReturnType<typeof getOnCallShifts>
+interface OnCallShifts {
+  totalDays: number
+  totalHours: number
+  bill: number
+  shifts: {
+    start: Date
+    end: Date
+    hoursInShift: number
+    daysInShift: number
+    shiftBill: number
+  }[]
+}
 
 interface OnCallShiftsOutput {
   onCallShifts: OnCallShifts
@@ -38,15 +49,15 @@ export function isValidShift(
     firstDayOfMonth: Date
     lastDayOfMonth: Date
   },
-) {
+): boolean {
   const startDate = parseISO(start ?? '')
   const endDate = parseISO(end ?? '')
 
   if (
     startDate > endDate
-      || isSameDay(endDate, firstDayOfMonth)
-      || (startDate < firstDayOfMonth && endDate < firstDayOfMonth)
-      || startDate > lastDayOfMonth
+    || isSameDay(endDate, firstDayOfMonth)
+    || (startDate < firstDayOfMonth && endDate < firstDayOfMonth)
+    || startDate > lastDayOfMonth
   ) {
     return false
   }
@@ -54,7 +65,7 @@ export function isValidShift(
   return true
 }
 
-export function getOnCallShifts(onCalls: OnCallCollection, { year, month, rate = 1 }: ActionOptions) {
+export function getOnCallShifts(onCalls: OnCallCollection, { year, month, rate = 1 }: ActionOptions): OnCallShifts {
   const firstDayOfMonth = getFirstDayOfMonth(year, month)
   const lastDayOfMonth = getLastDayOfMonth(year, month)
 
@@ -109,7 +120,7 @@ export function getOnCallShifts(onCalls: OnCallCollection, { year, month, rate =
   }
 }
 
-export function prepareOnCallReport({ meta, onCallShifts }: OnCallShiftsOutput, options: ProgramOptions) {
+export function prepareOnCallReport({ meta, onCallShifts }: OnCallShiftsOutput, options: ProgramOptions): string {
   const { date, user, schedule, rate } = meta
   const { shifts, bill, totalDays, totalHours } = onCallShifts
 

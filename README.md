@@ -1,6 +1,6 @@
 # pagerduty-oncall-report
 
-[![NPM version](https://img.shields.io/npm/v/@dan-kas/pd-oncall?color=374151&label=@dan-kas/pd-oncall)](https://www.npmjs.com/package/@dan-kas/pd-oncall) 
+[![NPM version](https://img.shields.io/npm/v/@dan-kas/pd-oncall?color=374151&label=@dan-kas/pd-oncall)](https://www.npmjs.com/package/@dan-kas/pd-oncall)
 [![code style](https://antfu.me/badge-code-style.svg)](https://github.com/antfu/eslint-config)
 
 Generate PagerDuty payroll for current month or specified date.
@@ -23,7 +23,7 @@ npm install -g @dan-kas/pd-oncall
 - User Access Token
   - You can generate it in your profile on PagerDuty. See [docs](https://support.pagerduty.com/docs/api-access-keys#generate-a-user-token-rest-api-key) for reference on how to do that
 
-## Usage: 
+## Usage:
 
 By default you will be prompted for PagerDuty token, which is required for API calls. Provided token is then stored in config file in your homedir. If you prefer not to store this token in homedir, you can pass token each time like this: `PAGERDUTY_TOKEN=<token> pd-oncall` or set env `PAGERDUTY_TOKEN` globally
 

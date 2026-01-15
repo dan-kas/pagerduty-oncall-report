@@ -6,7 +6,12 @@ import { Argument, Command, InvalidArgumentError, Option } from '@commander-js/e
 import { bgRed, bold, red, stripColors, white } from 'kolorist'
 import { appVersion, packageBinName } from '#app/package'
 
-function numberOrNull(value: string) {
+interface DateArg {
+  year: number | null
+  month: number | null
+}
+
+function numberOrNull(value: string): number | null {
   if (!value) {
     return null
   }
@@ -14,7 +19,7 @@ function numberOrNull(value: string) {
   return Number.parseInt(value, 10)
 }
 
-function dateArgParser(value: string) {
+function dateArgParser(value: string): DateArg {
   const pattern = /(?<month>\d{1,2})(?:[-/](?<year>\d{4}))?/
 
   const match = value.match(pattern)
@@ -85,7 +90,7 @@ export const program = new Command()
 program.configureOutput({
   writeErr: (str) => {
     const options = program.opts()
-    const pattern = new RegExp(`(^error: |${EOL}$)`, 'ig')
+    const pattern = new RegExp(`(^error: |${EOL}$)`, 'gi')
     const normalizedStr = str.replace(pattern, '')
 
     if (options.json) {
