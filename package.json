@@ -1,7 +1,8 @@
 {
   "name": "@dan-kas/pd-oncall",
+  "type": "module",
   "version": "0.8.2",
-  "packageManager": "pnpm@8.7.0",
+  "packageManager": "pnpm@10.28.0",
   "description": "PagerDuty report generator for single month on-call",
   "author": "Daniel Kasprzyk <dankas12@gmail.com>",
   "license": "MIT",
@@ -15,9 +16,9 @@
     "pd-oncall": "cli.js"
   },
   "files": [
-    "cli.js",
     "./dist/**/*.js",
-    "./dist/**/*.js.map"
+    "./dist/**/*.js.map",
+    "cli.js"
   ],
   "scripts": {
     "lint": "eslint .",
@@ -32,9 +33,6 @@
     "bump": "bumpp",
     "githooks": "npx simple-git-hooks"
   },
-  "peerDependencies": {
-    "@clack/prompts": "^0.7.0"
-  },
   "dependencies": {
     "@commander-js/extra-typings": "^11.0.0",
     "commander": "^11.0.0",
@@ -42,19 +40,20 @@
     "kolorist": "^1.8.0"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^0.41.0",
-    "@types/node": "^20.6.5",
-    "@types/update-notifier": "^6.0.5",
-    "@vitest/coverage-v8": "^0.34.5",
+    "@antfu/eslint-config": "^7.0.1",
+    "@clack/prompts": "^0.11.0",
+    "@types/node": "^24.10.9",
+    "@types/update-notifier": "^6.0.8",
+    "@vitest/coverage-v8": "^4.0.17",
     "bumpp": "^9.2.0",
-    "eslint": "^8.50.0",
-    "lint-staged": "^14.0.1",
+    "eslint": "^9.39.2",
+    "lint-staged": "^16.2.7",
     "resolve-tspaths": "^0.8.15",
-    "rimraf": "^5.0.1",
-    "simple-git-hooks": "^2.9.0",
-    "typescript": "~5.1.6",
+    "rimraf": "^6.1.2",
+    "simple-git-hooks": "^2.13.1",
+    "typescript": "~5.9.3",
     "vite-tsconfig-paths": "^4.2.1",
-    "vitest": "^0.34.5"
+    "vitest": "^4.0.17"
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged",
