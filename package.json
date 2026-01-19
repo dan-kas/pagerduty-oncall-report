@@ -16,10 +16,10 @@
     "cli"
   ],
   "bin": {
-    "pd-oncall": "./dist/index.mjs"
+    "pd-oncall": "dist/index.mjs"
   },
   "files": [
-    "./dist/index.mjs"
+    "dist/index.mjs"
   ],
   "scripts": {
     "lint": "eslint .",
@@ -28,9 +28,7 @@
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "type-check": "tsc --noEmit",
-    "build": "npm run build:app && npm run build:bin",
-    "build:app": "tsdown",
-    "build:bin": "rimraf build && npx pkg . --no-bytecode --public-packages \"*\" --public -C GZip",
+    "build": "tsdown",
     "bump": "bumpp",
     "githooks": "npx simple-git-hooks"
   },
@@ -61,16 +59,5 @@
   },
   "lint-staged": {
     "*.ts": "eslint --fix"
-  },
-  "pkg": {
-    "scripts": [
-      "./dist/**/*.js"
-    ],
-    "targets": [
-      "node18-linux-x64",
-      "node18-macos-x64",
-      "node18-win-x64"
-    ],
-    "outputPath": "build"
   }
 }
