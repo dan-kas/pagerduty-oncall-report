@@ -10,15 +10,12 @@
     "type": "git",
     "url": "git+https://github.com/dan-kas/pagerduty-oncall-report.git"
   },
-  "keywords": [],
-  "configName": "pd-oncall",
+  "keywords": ["pagerduty", "oncall", "cli", "typescript", "nodejs"],
   "bin": {
-    "pd-oncall": "cli.js"
+    "pd-oncall": "./dist/index.mjs"
   },
   "files": [
-    "./dist/**/*.js",
-    "./dist/**/*.js.map",
-    "cli.js"
+    "./dist/index.mjs"
   ],
   "scripts": {
     "lint": "eslint .",
@@ -26,14 +23,15 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "type-check": "tsc -p tsconfig.build.json --noEmit",
+    "type-check": "tsc --noEmit",
     "build": "npm run build:app && npm run build:bin",
-    "build:app": "rimraf dist && tsc -p tsconfig.build.json && resolve-tspaths -p tsconfig.build.json",
+    "build:app": "tsdown",
     "build:bin": "rimraf build && npx pkg . --no-bytecode --public-packages \"*\" --public -C GZip",
     "bump": "bumpp",
     "githooks": "npx simple-git-hooks"
   },
   "dependencies": {
+    "@clack/prompts": "^0.11.0",
     "@commander-js/extra-typings": "^11.0.0",
     "commander": "^11.0.0",
     "date-fns": "^2.30.0",
@@ -41,7 +39,6 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^7.0.1",
-    "@clack/prompts": "^0.11.0",
     "@types/node": "^24.10.9",
     "@types/update-notifier": "^6.0.8",
     "@vitest/coverage-v8": "^4.0.17",
@@ -51,6 +48,7 @@
     "resolve-tspaths": "^0.8.15",
     "rimraf": "^6.1.2",
     "simple-git-hooks": "^2.13.1",
+    "tsdown": "0.20.0-beta.3",
     "typescript": "~5.9.3",
     "vite-tsconfig-paths": "^4.2.1",
     "vitest": "^4.0.17"
