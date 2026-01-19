@@ -1,5 +1,6 @@
 import process from 'node:process'
 
+import type { Option } from '@clack/prompts'
 import { cancel, isCancel, password, select, text } from '@clack/prompts'
 
 interface PromptChoicesOptions {
@@ -28,12 +29,12 @@ export async function promptChoice<T extends string | number, O extends PromptCh
 ): Promise<PromptChoiceReturnType<T, O>> {
   const { required = false } = options
 
-  const value = await select({
+  const value = await select<T>({
     message,
     options: choices.map(([value, label]) => ({
       value,
       label,
-    })),
+    } as Option<T>)),
   })
 
   if (isCancel(value)) {
