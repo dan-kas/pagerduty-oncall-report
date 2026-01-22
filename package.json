@@ -2,7 +2,7 @@
   "name": "@dan-kas/pd-oncall",
   "type": "module",
   "version": "0.8.2",
-  "packageManager": "pnpm@10.28.0",
+  "packageManager": "pnpm@10.28.1",
   "description": "PagerDuty report generator for single month on-call",
   "author": "Daniel Kasprzyk <dankas12@gmail.com>",
   "license": "MIT",
@@ -40,10 +40,10 @@
     "kolorist": "^1.8.0"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^7.0.1",
+    "@antfu/eslint-config": "^7.2.0",
     "@types/node": "^24.10.9",
     "@types/update-notifier": "^6.0.8",
-    "@vitest/coverage-v8": "^4.0.17",
+    "@vitest/coverage-v8": "^4.0.18",
     "bumpp": "^9.2.0",
     "eslint": "^9.39.2",
     "lint-staged": "^16.2.7",
@@ -51,7 +51,7 @@
     "simple-git-hooks": "^2.13.1",
     "tsdown": "0.20.0-beta.3",
     "typescript": "~5.9.3",
-    "vitest": "^4.0.17"
+    "vitest": "^4.0.18"
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged",
