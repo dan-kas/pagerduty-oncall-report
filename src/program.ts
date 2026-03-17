@@ -19,14 +19,14 @@ function numberOrNull(value: string): number | null {
   return Number.parseInt(value, 10)
 }
 
-function dateArgParser(value: string): DateArg {
-  const pattern = /(?<month>\d{1,2})(?:[-/](?<year>\d{4}))?/
+const monthYearRegex = /(?<month>\d{1,2})(?:[-/](?<year>\d{4}))?/
 
-  const match = value.match(pattern)
+function dateArgParser(value: string): DateArg {
+  const match = value.match(monthYearRegex)
 
   if (!match) {
     throw new InvalidArgumentError(
-      red(`Invalid date format. Must match pattern: ${pattern}`),
+      red(`Invalid date format. Must match pattern: ${monthYearRegex}`),
     )
   }
 

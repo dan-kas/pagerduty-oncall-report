@@ -6,6 +6,8 @@ import { green } from 'kolorist'
 import pkgObj, { appVersion } from '#app/package'
 import { getLatestPackageVersion } from '#app/api/npm-registry'
 
+const gitUrlRegex = /^git\+|\.git$/g
+
 function semVersionCompare(a: string, b: string): string | null {
   const [aMajor, aMinor, aPatch] = a.split('.')
   const [bMajor, bMinor, bPatch] = b.split('.')
@@ -39,7 +41,7 @@ export async function checkVersion(): Promise<void> {
   }
 
   const packageUrl = `https://www.npmjs.com/package/${pkgObj.name}`
-  const githubRepositoryUrl = pkgObj.repository.url.replace(/^git\+|\.git$/g, '')
+  const githubRepositoryUrl = pkgObj.repository.url.replace(gitUrlRegex, '')
   const githubRepositoryReleasesUrl = `${githubRepositoryUrl}/releases`
 
   process.stdout.write(`| 🆕 New version available${EOL}`)

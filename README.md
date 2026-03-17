@@ -49,7 +49,7 @@ Using `--json` flag disables interactivity and requires all arguments to be pass
 
 ---
 
-#### `--help` output
+### `--help` output
 ```
 Usage: pd-oncall [options] [customDate]
 
